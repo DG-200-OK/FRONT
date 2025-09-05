@@ -1,315 +1,121 @@
-//surveyId로 응답 저장
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import CommonHeader from "../../components/CommonHeader";
 import BulgogiImg from "../../assets/img/bulgogi.png";
 
-const QUESTIONS_PER_SESSION = 5;
-
-const SurveyStart = () => {
-  const { title } = useParams();
-  const location = useLocation();
-  const navigate = useNavigate();
-  const { image, caption = [], path, surveyId } = location.state || {};
-  const [selected, setSelected] = useState({});
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [shuffledOptions, setShuffledOptions] = useState([]);
-  const [isSurveyComplete, setIsSurveyComplete] = useState(false);
-
-  useEffect(() => {
-    const shuffled = caption.map(() => {
-      return [1, 2, 3, 4, 5].sort(() => Math.random() - 0.5);
-    });
-    setShuffledOptions(shuffled);
-
-    const fetchProgress = async () => {
-      try {
-        const res = await fetch(`http://localhost:4000/survey/${surveyId}/progress`, {
-          credentials: "include",
-        });
-        const data = await res.json();
-
-        if (res.ok) {
-          setCurrentIndex(data.progress);
-          if (data.progress >= caption.length) {
-            setIsSurveyComplete(true);
-          }
-        }
-      } catch (err) {
-        console.error("❌ 진행도 불러오기 실패:", err);
-      }
-    };
-
-    fetchProgress();
-  }, [caption]);
-
-  const fallbackImage = BulgogiImg;
-  const fallbackCaption = "설명이 제공되지 않았습니다.";
-
-  const handleNext = async () => {
-    // ✅ 응답한 것만 추려서 저장
-    const filteredAnswers = Object.entries(selected)
-      .filter(([_, value]) => value > 0) // 0 제외
-      .sort(([a], [b]) => Number(a) - Number(b))
-      .map(([_, value]) => value);
-
-
-    const isLastInThisSession =
-      currentIndex === caption.length - 1 ||
-      (currentIndex + 1) % QUESTIONS_PER_SESSION === 0;
-
-    if (!isLastInThisSession) {
-      setCurrentIndex((prev) => prev + 1);
-    } else {
-      
-
-      try {
-        const res = await fetch(`http://localhost:4000/survey/${surveyId}/answer`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({  answers: filteredAnswers }),
-        });
-
-        if (!res.ok) throw new Error("응답 저장 실패");
-
-        navigate("/survey", {
-          state: {
-            completedTitle: title,
-          },
-          replace: true,
-        });
-      } catch (err) {
-        alert("응답 저장에 실패했습니다.");
-        console.error(err);
-      }
-    }
-  };
-
-  return (
-    <Wrapper>
-      <CommonHeader />
-      <Container>
-        <TopBar>
-          <Breadcrumb>{path || `한국 > cuisine > ${title}`}</Breadcrumb>
-          <Progress>
-            {caption.length > 0 ? currentIndex + 1 : 0}/{caption.length || 5}
-          </Progress>
-        </TopBar>
-
-        <ContentBox>
-          <ImageBox>
-            <Image src={image || fallbackImage} alt={title} />
-          </ImageBox>
-
-          <TextBox>
-            {isSurveyComplete ? (
-              <CompleteMessage>
-                해당 설문의 모든 문항을 완료했습니다.
-              </CompleteMessage>
-            ) : (
-              <>
-                <Caption>{caption[currentIndex] || fallbackCaption}</Caption>
-                <Options>
-                  {shuffledOptions[currentIndex]?.map((num) => (
-                    <Option key={num}>
-                      <RadioCircle
-                        type="radio"
-                        name={`rating-${currentIndex}`}
-                        value={num}
-                        size={22}
-                        checked={selected[currentIndex] === num}
-                        onChange={() =>
-                          setSelected((prev) => ({ ...prev, [currentIndex]: num }))
-                        }
-                      />
-                      <OptionLabel>
-                        {
-                          [
-                            "문화적으로 풍부하다 (5점)",
-                            "문화적으로 매우 적절하다 (4점)",
-                            "문화적으로 적절하다 (3점)",
-                            "중립적 또는 일반적이다 (2점)",
-                            "문화적으로 부적절하다 (1점)",
-                          ][num - 1]
-                        }
-                      </OptionLabel>
-                    </Option>
-                  ))}
-                </Options>
-
-                <NextButton
-                  disabled={selected[currentIndex] == null}
-                  onClick={handleNext}
-                >
-                  {(currentIndex + 1) % QUESTIONS_PER_SESSION === 0 ||
-                  currentIndex === caption.length - 1
-                    ? "설문조사 끝내기"
-                    : "다음으로"}
-                </NextButton>
-              </>
-            )}
-          </TextBox>
-        </ContentBox>
-      </Container>
-    </Wrapper>
-  );
-};
-
-export default SurveyStart;
-
-const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  font-family: Arial, sans-serif;
-  height: 100vh;
-  overflow-y: auto;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  &::-webkit-scrollbar {
-    display: none;
-  }
+// --- Styled Components (from previous step) ---
+const SurveyContainer = styled.div`
+  background-color: #ffffff;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 `;
-
-const Container = styled.div`
-  padding: 80px;
-`;
-
-const TopBar = styled.div`
+const SurveyHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
-`;
-
-const Breadcrumb = styled.div`
-  font-size: 18px;
+  margin-bottom: 16px;
   color: #666;
+  font-size: 14px;
 `;
-
-const Progress = styled.div`
-  font-size: 18px;
-  color: #333;
-`;
-
-const ContentBox = styled.div`
+const SurveyBody = styled.div`
   display: flex;
-  align-items: flex-start;
-  gap: 0px;
-  margin-bottom: 40px;
-  padding-top: 30px;
-
+  gap: 24px;
   @media (max-width: 768px) {
     flex-direction: column;
   }
 `;
-
-const ImageBox = styled.div`
-  flex: 0.9;
+const ImageSection = styled.div`
+  flex: 1;
 `;
-
-const TextBox = styled.div`
-  flex: 1.3;
+const CaptionTitle = styled.p`
+  font-size: 14px;
+  color: #666;
+  margin-top: 0;
 `;
-
-const Image = styled.img`
-  width: 98%;
-  height: 98%;
+const SurveyImage = styled.img`
+  width: 100%;
+  max-width: 500px;
+  border-radius: 8px;
   object-fit: cover;
-  border-radius: 10px;
 `;
-
-const Caption = styled.p`
-  font-size: 18px;
-  font-weight: bold;
-  line-height: 1.6;
-  color: #333;
-  margin-bottom: 20px;
-  margin-left: 20px;
-  height: 60px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  word-wrap: break-word;
-  display: -webkit-box;
-  -webkit-line-clamp: 5;
-  -webkit-box-orient: vertical;
-`;
-
-const Options = styled.div`
+const EvaluationSection = styled.div`
+  flex: 1;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 18px;
-  margin: 30px 0;
-  padding-left: 20px;
 `;
-
-const Option = styled.label`
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 14px;
-  cursor: pointer;
-  transition: transform 0.2s;
-`;
-
-const RadioCircle = styled.input`
-  appearance: none;
-  width: ${(props) => props.size || 22}px;
-  height: ${(props) => props.size || 22}px;
-  border-radius: 50%;
-  border: 2px solid #4a82d9;
-  background-color: white;
-  cursor: pointer;
-  box-sizing: border-box;
-  transition: all 0.25s ease;
-
-  &:checked {
-    background-color: #4a82d9;
-    transform: scale(1.2);
-  }
-
-  &:hover {
-    background-color: #649eff;
-    transform: scale(1.1);
-  }
-`;
-
-const OptionLabel = styled.span`
-  font-size: 18px;
-  font-weight: 500;
-  color: #333;
-  margin-left: 20px;
-  text-align: center;
-  transition: all 0.2s ease;
-
-  ${Option}:hover & {
-    transform: scale(1.05);
-    color: #4a82d9;
-  }
-
-  ${RadioCircle}:checked + & {
-    transform: scale(1.1);
-    font-weight: bold;
-    color: #4a82d9;
-  }
-`;
-
-const NextButton = styled.button`
-  display: block;
-  margin: 0 auto;
-  padding: 12px 30px;
+const DescriptionText = styled.p`
   font-size: 16px;
-  background-color: #649eff;
+  line-height: 1.6;
+  color: #333;
+  margin-top: 0;
+  margin-bottom: 24px;
+  min-height: 60px;
+`;
+const SliderGroup = styled.div`
+  margin-bottom: 20px;
+  label {
+    display: block;
+    margin-bottom: 12px;
+    font-weight: 500;
+  }
+`;
+const SliderWrapper = styled.div`
+  position: relative;
+`;
+const SliderLabels = styled.div`
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #666;
+    padding: 0 5px;
+`;
+const Slider = styled.input`
+  -webkit-appearance: none;
+  width: 100%;
+  height: 20px;
+  border-radius: 10px;
+  background: #f1f1f1;
+  outline: none;
+  padding: 0;
+  margin: 0;
+
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #ffffff;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  }
+
+  &.cultural { background: #fffacd; }
+  &.visual { background: #b0e0e6; }
+  &.hallucination { background: #ffc0cb; }
+`;
+const SurveyFooter = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+`;
+const NextButton = styled.button`
+  background-color: #007bff;
   color: white;
   border: none;
+  padding: 12px 60px;
   border-radius: 8px;
+  font-size: 16px;
+  font-weight: 700;
   cursor: pointer;
   transition: background-color 0.2s;
 
   &:hover {
-    background-color: #3a6fbd;
+    background-color: #0056b3;
   }
 
   &:disabled {
@@ -317,11 +123,189 @@ const NextButton = styled.button`
     cursor: not-allowed;
   }
 `;
-
+const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  font-family: 'Roboto', 'Noto Sans KR', sans-serif;
+  height: 100vh;
+  background-color: #f0f8ff;
+`;
+const Container = styled.div`
+  padding: 80px;
+  max-width: 1200px;
+  margin: 0 auto;
+`;
 const CompleteMessage = styled.div`
   font-size: 20px;
-  color: #4a82d9;
+  color: #007bff;
   font-weight: bold;
   padding: 40px;
   text-align: center;
 `;
+
+// --- Refactored SurveyStart Component ---
+
+const SurveyStart = () => {
+  const { title } = useParams();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { image, captions = [], path, surveyId } = location.state || {};
+
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isSurveyComplete, setIsSurveyComplete] = useState(false);
+  const [sliderValues, setSliderValues] = useState({ cultural: 3, visual: 3, hallucination: 3 });
+
+  const userId = localStorage.getItem('user_id');
+
+  useEffect(() => {
+    if (!userId) {
+      navigate("/login");
+      return;
+    }
+    if (currentIndex >= captions.length && captions.length > 0) {
+      setIsSurveyComplete(true);
+    }
+  }, [currentIndex, captions.length, navigate, userId]);
+
+  const handleSliderChange = (type, value) => {
+    setSliderValues(prev => ({
+      ...prev,
+      [type]: parseInt(value, 10)
+    }));
+  };
+
+  const handleNext = async () => {
+    if (isSurveyComplete) return;
+
+    const currentCaption = captions[currentIndex];
+    if (!currentCaption) {
+        alert("현재 캡션 정보를 찾을 수 없습니다.");
+        return;
+    }
+
+    const responsePayload = {
+        ...sliderValues,
+        user_id: parseInt(userId, 10),
+        caption_id: currentCaption.Key
+    };
+
+    try {
+        console.log("📡 응답 전송 시작...", responsePayload);
+        const res = await fetch(`https://famous-blowfish-plainly.ngrok-free.app/api/surveys/responses/`, {
+            method: "POST",
+            headers: { 
+                "Content-Type": "application/json",
+                'ngrok-skip-browser-warning': 'true'
+            },
+            credentials: "include",
+            body: JSON.stringify(responsePayload),
+        });
+
+        if (!res.ok) {
+            const errorData = await res.json();
+            throw new Error(errorData.detail || "응답 저장에 실패했습니다.");
+        }
+
+        console.log("✅ 응답 저장 성공");
+
+        // Reset sliders for next question and move to next index
+        setSliderValues({ cultural: 3, visual: 3, hallucination: 3 });
+        setCurrentIndex(prev => prev + 1);
+
+    } catch (err) {
+        alert(`오류가 발생했습니다: ${err.message}`);
+        console.error(err);
+    }
+  };
+
+  const currentCaptionText = captions[currentIndex]?.text || "Loading caption...";
+
+  return (
+    <Wrapper>
+      <CommonHeader />
+      <Container>
+        {isSurveyComplete ? (
+          <CompleteMessage>
+            설문이 완료되었습니다. 참여해주셔서 감사합니다!
+          </CompleteMessage>
+        ) : (
+          <SurveyContainer>
+            <SurveyHeader>
+              <span className="category-path">{path || `... > ${title}`}</span>
+              <span className="page-info">{currentIndex + 1} / {captions.length || 0}</span>
+            </SurveyHeader>
+
+            <SurveyBody>
+              <ImageSection>
+                <CaptionTitle>current caption : {currentCaptionText}</CaptionTitle>
+                <SurveyImage src={image || BulgogiImg} alt={title} />
+              </ImageSection>
+
+              <EvaluationSection>
+                <DescriptionText>
+                  제시된 캡션이 이미지를 얼마나 잘 설명하는지, 문화적 맥락을 올바르게 반영하는지, 그리고 사실과 다른 정보(환각)를 포함하고 있는지 평가해주세요.
+                </DescriptionText>
+                
+                <SliderGroup>
+                  <label htmlFor="cultural">Cultural Appropriateness</label>
+                  <SliderWrapper>
+                    <Slider 
+                      type="range" 
+                      id="cultural" 
+                      min="1" 
+                      max="5" 
+                      value={sliderValues.cultural}
+                      onChange={(e) => handleSliderChange('cultural', e.target.value)}
+                      className="slider cultural"
+                    />
+                    <SliderLabels><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></SliderLabels>
+                  </SliderWrapper>
+                </SliderGroup>
+
+                <SliderGroup>
+                  <label htmlFor="visual">Visual Detail</label>
+                  <SliderWrapper>
+                    <Slider 
+                      type="range" 
+                      id="visual" 
+                      min="1" 
+                      max="5" 
+                      value={sliderValues.visual}
+                      onChange={(e) => handleSliderChange('visual', e.target.value)}
+                      className="slider visual"
+                    />
+                    <SliderLabels><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></SliderLabels>
+                  </SliderWrapper>
+                </SliderGroup>
+
+                <SliderGroup>
+                  <label htmlFor="hallucination">Hallucination</label>
+                  <SliderWrapper>
+                     <Slider 
+                      type="range" 
+                      id="hallucination" 
+                      min="1" 
+                      max="5" 
+                      value={sliderValues.hallucination}
+                      onChange={(e) => handleSliderChange('hallucination', e.target.value)}
+                      className="slider hallucination"
+                    />
+                    <SliderLabels><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></SliderLabels>
+                  </SliderWrapper>
+                </SliderGroup>
+              </EvaluationSection>
+            </SurveyBody>
+
+            <SurveyFooter>
+              <NextButton onClick={handleNext}>
+                {currentIndex === (captions.length || 0) - 1 ? "최종 제출하기" : "다음으로"}
+              </NextButton>
+            </SurveyFooter>
+          </SurveyContainer>
+        )}
+      </Container>
+    </Wrapper>
+  );
+};
+
+export default SurveyStart;

@@ -66,7 +66,11 @@ const MyPage = () => {
 
   useEffect(() => {
     const fetchUser = async () => {
-      const res = await fetch("http://localhost:4000/api/auth/me", {
+      const res = await fetch("https://famous-blowfish-plainly.ngrok-free.app/api/auth/me", {
+             headers: {
+      'Accept': 'application/json',
+      'ngrok-skip-browser-warning': 'true', // 중요
+    },
         credentials: "include",
       });
   
@@ -111,11 +115,12 @@ const MyPage = () => {
   };
 
   const uploadProfileImage = (base64) => {
-    fetch("http://localhost:4000/api/auth/profile", {
+    fetch("https://famous-blowfish-plainly.ngrok-free.app/api/auth/profile", {
+           headers: {
+      'Accept': 'application/json',
+      'ngrok-skip-browser-warning': 'true', // 중요
+    },
       method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
       credentials: "include",
       body: JSON.stringify({ profileImage: base64 }),
     })
@@ -164,7 +169,7 @@ const MyPage = () => {
       return;
     }
 
-    fetch(`http://localhost:4000/api/auth/check-nickname/${nickname}`)
+    fetch(`https://famous-blowfish-plainly.ngrok-free.app/api/auth/check-nickname/${nickname}`)
       .then(res => res.json())
       .then(data => {
         if (data.exists) {
@@ -172,9 +177,12 @@ const MyPage = () => {
           return;
         }
 
-        fetch("http://localhost:4000/api/auth/nickname", {
+        fetch("https://famous-blowfish-plainly.ngrok-free.app/api/auth/nickname", {
+                 headers: {
+      'Accept': 'application/json',
+      'ngrok-skip-browser-warning': 'true', // 중요
+    },
           method: "PATCH",
-          headers: { "Content-Type": "application/json" },
           credentials: "include",
           body: JSON.stringify({ nickname }),
         })

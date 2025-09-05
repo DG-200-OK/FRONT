@@ -98,12 +98,17 @@ class Login extends Component {
 
 
     try {
-      const response = await fetch("http://localhost:4000/api/auth/login", {
+      const formData = new URLSearchParams();
+      formData.append('username', email.trim());
+      formData.append('password', password.trim());
+
+      const response = await fetch("https://famous-blowfish-plainly.ngrok-free.app/api/auth/login", {    
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          id: email.trim(),
-          password: password.trim().replace(/\n/g, ""), }),
+        headers: { 
+          "Content-Type": "application/x-www-form-urlencoded",
+          'ngrok-skip-browser-warning': 'true'
+        },
+        body: formData,
         credentials: "include",
       });
 
@@ -117,7 +122,7 @@ class Login extends Component {
       const data = await response.json();
       console.log("✅ 로그인 성공:", data);
 
-      
+      localStorage.setItem('user_id', data.user.Key);
 
       if (data.role === "admin") {
         console.log("관리자 로그인 성공!");

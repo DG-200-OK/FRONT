@@ -1,13 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import SurveypageLayout from "../../layouts/SurveypageLayout";
 
 const Survey = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const surveyRefs = useRef({});
-  const { completedTitle } = location.state || {};
 
   const [surveys, setSurveys] = useState([]);
   const [selectedCountries, setSelectedCountries] = useState([]);
@@ -15,12 +13,23 @@ const Survey = () => {
   const [sortOrder, setSortOrder] = useState("asc");
 
   useEffect(() => {
-    fetch("http://localhost:4000/survey", {
+    const userId = localStorage.getItem('user_id');
+    if (!userId) {
+      navigate("/login");
+      return;
+    }
+
+    fetch("https://famous-blowfish-plainly.ngrok-free.app/api/surveys", {
+      headers: {
+        'Accept': 'application/json',
+        'ngrok-skip-browser-warning': 'true',
+        'user-id': userId
+      },
       credentials: "include",
     })
       .then((res) => res.json())
       .then((data) => setSurveys(data));
-  }, []);
+  }, [navigate]);
 
   const filtered = surveys.filter((item) => {
     const countryMatch =
@@ -29,9 +38,7 @@ const Survey = () => {
     const categoryMatch =
       selectedCategories.length === 0 || selectedCategories.includes(item.category);
 
-    const titleMatch = item.title === completedTitle;
-
-    return (countryMatch && categoryMatch) || titleMatch;
+    return countryMatch && categoryMatch;
   });
 
   const sorted = [...filtered].sort((a, b) => {
@@ -41,12 +48,6 @@ const Survey = () => {
       ? titleA.localeCompare(titleB)
       : titleB.localeCompare(titleA);
   });
-
-  useEffect(() => {
-    if (completedTitle && surveyRefs.current[completedTitle]) {
-      surveyRefs.current[completedTitle].scrollIntoView({ behavior: "smooth", block: "center" });
-    }
-  }, [completedTitle, sorted]);
 
   return (
     <SurveypageLayout
@@ -78,38 +79,39 @@ const Survey = () => {
 
       <SurveyContainer>
         {sorted.map((item) => {
-          const answered = item.progress || 0;
-          const total = 20; // 고정값
-          const percent = Math.round((answered / total) * 100);
+          const total = item.captions.length || 5;
+          const answered = Math.round((item.progress || 0) * total);
+          const percent = Math.round((item.progress || 0) * 100);
+
           return (
             <SurveyItem
-              key={item._id}
+              key={item.Key} // Use Key instead of _id
               ref={(el) => (surveyRefs.current[item.title] = el)}
               onClick={() =>
                 navigate(`/survey/${item.title}`, {
                   state: {
-                    image: item.imageUrl,
-                    caption: item.captions,
+                    image_url: item.image_url, // Use image_url
+                    captions: item.captions, // Pass the whole captions array of objects
                     country: item.country,
                     category: item.category,
-                    entityName: item.entityName,
-                    _id: item._id,
+                    title: item.title, // Use title
+                    Key: item.Key, // Pass survey Key as surveyId
                   },
                 })
               }
             >
-              <SurveyImage src={item.imageUrl} alt={item.title} />
+              <SurveyImage src={item.image_url} alt={item.title} />
               <SurveyContent>
                 <strong style={{ fontSize: "17px" }}>
-                  {`${item.country} > ${item.category} > ${item.entityName}`}
+                  {`${item.country} > ${item.category} > ${item.title}`}
                 </strong>
-                <ProgressBar value={answered} max={total} />
+                <ProgressBar value={item.progress || 0} max={1} />
                 <ProgressText>
                   {`${answered} / ${total} (${percent}%)`}
                 </ProgressText>
               </SurveyContent>
               <ContinueButton>
-                {answered >= total ? "완료" : "이어서 진행하기"}
+                {percent >= 100 ? "완료" : "이어서 진행하기"}
               </ContinueButton>
             </SurveyItem>
           );

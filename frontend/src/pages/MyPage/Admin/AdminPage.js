@@ -115,29 +115,58 @@ const AdminPage = () => {
     console.log("선택된 파일 👉", file);
   };
 
-  const handleSubmit = async (e) => {
+    const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("🚀 등록 버튼 클릭됨");
+    
+    if (!imageFile) {
+      alert("이미지를 먼저 업로드해주세요.");
+      return;
+    }
 
-
-    const formDataToSend = new FormData();
-    formDataToSend.append("admin", "admin@admin.com");
-    formDataToSend.append("country", formData.country);
-    formDataToSend.append("category", formData.category);
-    formDataToSend.append("entityName", formData.entityName);
-    formDataToSend.append("captions", JSON.stringify(formData.captions)); // 배열은 문자열로 보내야 함
-    formDataToSend.append("image", imageFile); // File 객체
-  
     try {
-      console.log("📡 FormData 전송 시작");
-      const res = await fetch("http://localhost:4000/survey", {
+      // 1. Upload image first
+      const imageFormData = new FormData();
+      imageFormData.append("image", imageFile);
+
+      console.log("📡 이미지 업로드 시작...");
+      const imageRes = await fetch("https://famous-blowfish-plainly.ngrok-free.app/api/surveys/upload-image/", {
         method: "POST",
-        body: formDataToSend,
+        headers: {
+          'ngrok-skip-browser-warning': 'true'
+        },
+        body: imageFormData,
         credentials: "include",
       });
-  
-      console.log("📥 응답 수신됨", res);
-      if (res.ok) {
+
+      if (!imageRes.ok) {
+        throw new Error("이미지 업로드에 실패했습니다.");
+      }
+
+      const imageData = await imageRes.json();
+      const imageUrl = imageData.imageUrl;
+      console.log("✅ 이미지 업로드 성공, URL:", imageUrl);
+
+      // 2. Submit survey data with the image URL
+      const surveyPayload = {
+        image_url: imageUrl,
+        country: formData.country,
+        category: formData.category,
+        title: formData.entityName, // entityName -> title
+        captions: formData.captions.map(captionText => ({ text: captionText, type: 'generated' })) // captions to array of objects
+      };
+
+      console.log("📡 설문 데이터 전송 시작...", surveyPayload);
+      const surveyRes = await fetch("https://famous-blowfish-plainly.ngrok-free.app/api/surveys/", {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true'
+        },
+        body: JSON.stringify(surveyPayload),
+        credentials: "include",
+      });
+
+      if (surveyRes.ok) {
         alert("등록 완료!");
         setFormData({
           country: "",
@@ -145,15 +174,16 @@ const AdminPage = () => {
           entityName: "",
           captions: ["", "", "", "", ""],
         });
-        //setImageFile(null);
-        window.dispatchEvent(new Event("surveyRegistered"));
+        setImageFile(null);
+        // Optionally, you can clear the file input as well
+        document.getElementById("imageUpload").value = "";
       } else {
-        const error = await res.json();
-        alert("등록 실패: " + error.message);
+        const error = await surveyRes.json();
+        alert("등록 실패: " + (error.detail || "알 수 없는 오류"));
       }
     } catch (err) {
-      console.error("❌ 서버 오류:", err);
-      alert("서버 오류가 발생했습니다.");
+      console.error("❌ 설문 등록 중 오류 발생:", err);
+      alert(`오류가 발생했습니다: ${err.message}`);
     }
   };
   

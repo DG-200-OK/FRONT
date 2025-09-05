@@ -145,7 +145,12 @@ const AdminListPage = () => {
   useEffect(() => {
     const fetchSurveys = async () => {
       try {
-        const res = await fetch("https://backend-culturelens.shop/survey");
+        const res = await fetch("https://famous-blowfish-plainly.ngrok-free.app/api/surveys", {
+          headers: {
+            'Accept': 'application/json',
+            'ngrok-skip-browser-warning': 'true'
+          },
+        });
         const data = await res.json();
         setSurveys(data);
         setFilteredSurveys(data);

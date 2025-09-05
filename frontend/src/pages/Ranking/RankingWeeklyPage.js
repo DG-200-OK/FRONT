@@ -16,11 +16,14 @@ const RankingWeeklyPage = () => {
   const countries = ["한국", "중국", "일본"];
 
   useEffect(() => {
-    fetch("http://localhost:4000/api/ranking/weekly")
+    fetch("https://famous-blowfish-plainly.ngrok-free.app/api/ranking/weekly")
       .then(res => res.json())
       .then(data => setRankingData(data))
       .catch(err => console.error("❌ 랭킹 데이터 오류:", err));
-  }, []);
+  }, {headers: {
+      'Accept': 'application/json',
+      'ngrok-skip-browser-warning': 'true', // 중요
+    },}, []);
 
   const styles = {
     container: {

@@ -149,13 +149,16 @@ const SignupID = () => {
     });
   
     try {
-      const response = await fetch("http://localhost:4000/api/auth/signup", {
+      const response = await fetch("https://famous-blowfish-plainly.ngrok-free.app/api/auth/signup", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          'Accept': 'application/json',
+          'ngrok-skip-browser-warning': 'true'
+        },
         body: JSON.stringify({
-          id,
-          password,
-          profileImage: base64, // 기본 이미지 포함!
+          username: id,
+          password
         }),
         credentials: "include",
       });

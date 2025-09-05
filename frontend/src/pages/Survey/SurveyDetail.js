@@ -6,16 +6,16 @@ import CommonHeader from "../../components/CommonHeader";
 const SurveyDetail = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { title, image, caption, country, category, entityName, _id } = location.state || {};
+  const { title, image_url, captions, country, category, Key } = location.state || {};
 
   const handleStart = () => {
-    const path = `${country} > ${category} > ${entityName}`;
+    const path = `${country} > ${category} > ${title}`;
     navigate(`/survey/${title}/start`, {
       state: {
-        image,
-        caption,
+        image: image_url,
+        captions: captions, // Pass array of caption objects
         path,
-        surveyId: _id, // ✅ ObjectId 전달
+        surveyId: Key, // Pass survey Key
       },
     });
   };
@@ -24,11 +24,11 @@ const SurveyDetail = () => {
     <Wrapper>
       <CommonHeader />
       <Container>
-        <Image src={image} alt={title} />
+        <Image src={image_url} alt={title} />
         <TextBox>
           <Title>{title}</Title>
           <Description>
-            {country} / {category} / {entityName}
+            {country} / {category} / {title}
           </Description>
           <StartButton onClick={handleStart}>설문 시작하기</StartButton>
         </TextBox>

@@ -89,7 +89,19 @@ const MainPage = () => {
   useEffect(() => {
     const fetchSurveys = async () => {
       try {
-        const response = await axios.get("http://localhost:4000/api/home");
+        const userId = localStorage.getItem('user_id');
+        if (!userId) {
+          navigate("/login");
+          return;
+        }
+
+        const response = await axios.get("https://famous-blowfish-plainly.ngrok-free.app/api/surveys", {
+          headers: {
+            'Accept': 'application/json',
+            'ngrok-skip-browser-warning': 'true', // 중요
+            'user-id': userId
+          },
+        });
         console.log("서버 응답:", response.data); // 응답 데이터 구조 확인
         setSurveyData(response.data);
       } catch (error) {
@@ -98,7 +110,7 @@ const MainPage = () => {
     };
   
     fetchSurveys();
-  }, []);
+  }, [navigate]);
   
 
   const weeklyRanking = [
@@ -117,7 +129,7 @@ const MainPage = () => {
     { id: 5, name: "user5", count: 25 },
   ];
 
-  const ongoingSurveys = surveyData.filter(item => item.approved);
+  const ongoingSurveys = surveyData.filter(item => (item.progress || 0) < 1);
 
   return (
     <Container>
@@ -147,33 +159,36 @@ const MainPage = () => {
       <SurveyContainer>
         <h3>🔍 진행중인 설문</h3>
         {ongoingSurveys.length === 0 ? (
-          <div>승인된 설문이 없습니다.</div>
+          <div>진행중인 설문이 없습니다.</div>
         ) : (
           ongoingSurveys.map((item, index) => {
-            const goal = 20;
-            const responses = Array.isArray(item.responses) ? item.responses : [];
-            const percent = Math.round((responses.length / goal) * 100);
+            const total = item.captions.length || 5;
+            const answered = Math.round((item.progress || 0) * total);
+            const percent = Math.round((item.progress || 0) * 100);
           
             return (
               <SurveyItem
                 key={index}
                 onClick={() =>
-                  navigate(`/survey/${item._id}`, {
+                  navigate(`/survey/${item.title}`, {
                     state: {
-                      image: item.imageUrl,
-                      caption: item.captions?.[0] || "",
-                      path: `한국 > ${item.category} > ${item.entityName}`,
+                      image_url: item.image_url,
+                      captions: item.captions,
+                      country: item.country,
+                      category: item.category,
+                      title: item.title,
+                      Key: item.Key,
                     },
                   })
                 }
               >
-                <SurveyImage src={item.imageUrl} alt={item.entityName} />
+                <SurveyImage src={item.image_url} alt={item.title} />
                 <SurveyContent>
-                  <strong>{item.entityName}</strong>
+                  <strong>{item.title}</strong>
                   <ProgressText>진행상황</ProgressText>
-                  <ProgressBar value={responses.length} max={goal} />
+                  <ProgressBar value={item.progress || 0} max={1} />
                   <ProgressText>
-                    {percent}% ({responses.length} / {goal})
+                    {percent}% ({answered} / {total})
                   </ProgressText>
                 </SurveyContent>
                 <ContinueButton>이어서 진행하기</ContinueButton>

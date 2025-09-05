@@ -11,7 +11,11 @@ const SurveyParticipation = () => {
   const [surveys, setSurveys] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:4000/api/auth/me", {
+    fetch("https://famous-blowfish-plainly.ngrok-free.app/api/auth/me", {
+      headers: {
+      'Accept': 'application/json',
+      'ngrok-skip-browser-warning': 'true', // 중요
+    },
       credentials: "include",
     })
       .then((res) => res.json())
@@ -19,7 +23,11 @@ const SurveyParticipation = () => {
         setResponses(data.user.responses || []);
       }); 
 
-    fetch("http://localhost:4000/survey",{
+    fetch("https://famous-blowfish-plainly.ngrok-free.app/api/surveys",{
+      headers: {
+      'Accept': 'application/json',
+      'ngrok-skip-browser-warning': 'true', // 중요
+    },
       credentials: "include",
     })
       .then((res) => res.json())

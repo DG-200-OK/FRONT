@@ -129,7 +129,11 @@ const AdminDetailPage = () => {
   useEffect(() => {
     const fetchSurveyDetails = async () => {
       try {
-        const res = await fetch(`http://localhost:4000/survey/${id}`);
+        const res = await fetch(`https://famous-blowfish-plainly.ngrok-free.app/api/surveys/${id}`, {
+          headers: {
+            'ngrok-skip-browser-warning': 'true'
+          }
+        });
         const data = await res.json();
 
         const mockVotes = {
