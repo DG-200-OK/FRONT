@@ -2,7 +2,6 @@ import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import styled from "styled-components";
 
-// SurveypageSidebar 스타일에 맞춰 수정된 Sidebar
 const Sidebar = styled.div`
   width: 220px;
   padding: 20px 40px;
@@ -10,7 +9,6 @@ const Sidebar = styled.div`
   background-color: #f0f8ff;
 `;
 
-// Section 제목 스타일
 const SectionTitle = styled.h3`
   font-size: 16px;
   margin-bottom: 10px;
@@ -18,12 +16,10 @@ const SectionTitle = styled.h3`
   padding-bottom: 5px;
 `;
 
-// 메뉴 묶음 그룹
 const ButtonGroup = styled.div`
   margin-bottom: 40px;
 `;
 
-// 버튼 스타일 (SurveypageSidebar의 CheckboxLabel에 맞춤)
 const MenuButton = styled(Link)`
   display: flex;
   align-items: center;

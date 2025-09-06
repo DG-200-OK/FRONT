@@ -49,7 +49,6 @@ const SurveyParticipation = () => {
     .map((r) => surveyMap.get(r.surveyId))
     .filter(Boolean);
 
-  // ✅ 나라별 참여/미참여 차트 데이터 구성
   const countryGroups = {};
   surveys.forEach((s) => {
     if (!countryGroups[s.country]) {

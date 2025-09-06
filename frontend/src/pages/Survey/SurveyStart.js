@@ -5,7 +5,6 @@ import CommonHeader from "@/components/CommonHeader";
 import BulgogiImg from "@/assets/img/bulgogi.png";
 import axiosInstance from "@/axiosInstance";
 
-// --- Styled Components (from previous step) ---
 const SurveyContainer = styled.div`
   background-color: #ffffff;
   border: 1px solid #dee2e6;
@@ -144,8 +143,6 @@ const CompleteMessage = styled.div`
   text-align: center;
 `;
 
-// --- Refactored SurveyStart Component ---
-
 const SurveyStart = () => {
   const { title } = useParams();
   const location = useLocation();
@@ -198,8 +195,6 @@ const SurveyStart = () => {
             },
             withCredentials: true,
         });
-
-        console.log("✅ 응답 저장 성공");
 
         // Reset sliders for next question and move to next index
         setSliderValues({ cultural: 3, visual: 3, hallucination: 3 });

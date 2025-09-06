@@ -176,7 +176,7 @@ const SignupID = () => {
   const handleModalClose = () => {
     setShowModal(false);
     if (!isError) {
-      navigate("/mainpage"); // 회원가입 성공 시 메인페이지로 이동
+      navigate("/mainpage");
     }
   };
 

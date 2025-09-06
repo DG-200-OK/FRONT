@@ -147,7 +147,7 @@ const AdminDetailPage = () => {
 
         setSurvey({ ...data, votes: mockVotes });
       } catch (err) {
-        console.error("❌ 설문 세부 정보 불러오기 실패:", err);
+        console.error("설문 세부 정보 불러오기 실패:", err);
       }
     };
 

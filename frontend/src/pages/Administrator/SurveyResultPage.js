@@ -112,8 +112,6 @@ const SurveyResultPage = () => {
         <Title>설문 결과 - {survey.entityName}</Title>
         <ResultBox>
           <Question>각 캡션별 결과는 아래와 같습니다.</Question>
-
-          {/* ✅ 총 참여자 수 표시 */}
           <p style={{ fontSize: "16px", marginBottom: "20px", color: "#555" }}>
             현재까지 참여자 수: <strong>{total}명</strong>
           </p>
@@ -132,8 +130,6 @@ const SurveyResultPage = () => {
               </BarContainer>
             );
           })}
-
-          {/* ✅ 그래프 해석 설명 문구 */}
           <p style={{ fontSize: "14px", color: "#777", marginTop: "10px" }}>
             ※ 그래프에서{" "}
             <strong>0%에 가까울수록 문화적으로 부적절한 캡션</strong>,{" "}

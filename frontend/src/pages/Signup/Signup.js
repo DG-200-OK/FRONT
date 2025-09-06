@@ -12,7 +12,6 @@ const Container = styled.div`
   background-color: #fff;
 `;
 
-// 로고 스타일
 const HeaderLogo = styled.div`
   display: flex;
   align-items: center;
@@ -28,14 +27,12 @@ const HeaderLogo = styled.div`
   }
 `;
 
-// 소개 문구
 const Description = styled.p`
   font-size: 14px;
   color: #666;
   margin-bottom: 20px;
 `;
 
-// 버튼 공통 스타일
 const Button = styled.button`
   width: 300px;
   padding: 15px;
@@ -46,7 +43,6 @@ const Button = styled.button`
   text-align: center;
 `;
 
-// SNS 시작하기 버튼
 const SNSButton = styled(Button)`
   background-color: #fff;
   border: 1px solid #ddd;
@@ -58,7 +54,6 @@ const SNSButton = styled(Button)`
   }
 `;
 
-// 구분선
 const Divider = styled.div`
   display: flex;
   align-items: center;
@@ -76,7 +71,6 @@ const Divider = styled.div`
   }
 `;
 
-// 아이디로 시작하기 버튼
 const IDButton = styled(Button)`
   background-color: #68a0f4;
   color: white;
@@ -87,7 +81,6 @@ const IDButton = styled(Button)`
   }
 `;
 
-// 로그인 안내 문구
 const LoginText = styled.p`
   margin-top: 20px;
   font-size: 14px;
@@ -104,26 +97,19 @@ class Signup extends React.Component {
   render() {
     return (
       <Container>
-        {/* 로고 */}
         <HeaderLogo>
-          <img src={LogoImage} alt="로고" /> {/* 이미지 소스 변경 */}
+          <img src={LogoImage} alt="로고" /> 
         </HeaderLogo>
         <Description>빠르고 쉽게 계정을 만들어보세요!</Description>
 
-        {/* SNS로 시작하기 버튼 */}
         <Link to="/signupsns">
           <SNSButton>SNS로 시작하기</SNSButton>
         </Link>
-
-        {/* 구분선 */}
+=
         <Divider>OR</Divider>
-
-        {/* 아이디로 시작하기 버튼 */}
         <Link to="/signupid">
           <IDButton>아이디로 시작하기</IDButton>
         </Link>
-
-        {/* 로그인 안내 */}
         <LoginText>
           이미 계정이 있으신가요? <Link to="/login">로그인하기</Link>
         </LoginText>

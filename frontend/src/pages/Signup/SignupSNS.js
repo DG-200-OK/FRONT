@@ -66,7 +66,7 @@ const Button = styled.button`
 
 const GoogleButton = styled(Button)`
   img {
-    width: 30px; // 기존보다 크게 설정
+    width: 30px; 
     height: 20px;
   }
 `;
@@ -88,13 +88,11 @@ class SignupSNS extends React.Component {
   render() {
     return (
       <Container>
-        {/* 로고 */}
         <HeaderLogo>
-          <img src={LogoImage} alt="로고" /> {/* 이미지 소스 변경 */}
+          <img src={LogoImage} alt="로고" />
         </HeaderLogo>
         <Description>빠르고 쉽게 계정을 만들어보세요!</Description>
 
-        {/* SNS 버튼 */}
         <Button>
           <img src={naverLogo} alt="네이버" /> 네이버로 시작하기
         </Button>
@@ -105,7 +103,6 @@ class SignupSNS extends React.Component {
           <img src={googleLogo} alt="구글" /> 구글로 시작하기
         </GoogleButton>
 
-        {/* 로그인 안내 */}
         <LoginText>
           이미 계정이 있으신가요? <Link to="/login">로그인하기</Link>
         </LoginText>

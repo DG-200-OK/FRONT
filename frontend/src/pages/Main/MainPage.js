@@ -174,7 +174,7 @@ const MainPage = () => {
                 onClick={() =>
                   navigate(`/survey/${item.title}`, {
                     state: {
-                      image_url: item.image_url,
+                      image_url: item.imageUrl,
                       captions: item.captions,
                       country: item.country,
                       category: item.category,
@@ -184,7 +184,7 @@ const MainPage = () => {
                   })
                 }
               >
-                <SurveyImage src={item.image_url} alt={item.title} />
+                <SurveyImage src={item.imageUrl} alt={item.title} />
                 <SurveyContent>
                   <strong>{item.title}</strong>
                   <ProgressText>진행상황</ProgressText>

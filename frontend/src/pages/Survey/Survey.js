@@ -98,17 +98,17 @@ const Survey = () => {
 
           return (
             <SurveyItem
-              key={item.Key} // Use Key instead of _id
+              key={item.Key} 
               ref={(el) => (surveyRefs.current[item.title] = el)}
               onClick={() =>
                 navigate(`/survey/${item.title}`, {
                   state: {
-                    image_url: item.image_url, // Use image_url
-                    captions: item.captions, // Pass the whole captions array of objects
+                    image_url: item.imageUrl,
+                    captions: item.captions,
                     country: item.country,
                     category: item.category,
-                    title: item.title, // Use title
-                    Key: item.Key, // Pass survey Key as surveyId
+                    title: item.title,
+                    Key: item.Key,
                   },
                 })
               }

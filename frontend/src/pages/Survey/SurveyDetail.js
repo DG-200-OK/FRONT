@@ -13,9 +13,9 @@ const SurveyDetail = () => {
     navigate(`/survey/${title}/start`, {
       state: {
         image: image_url,
-        captions: captions, // Pass array of caption objects
+        captions: captions, 
         path,
-        surveyId: Key, // Pass survey Key
+        surveyId: Key,
       },
     });
   };
@@ -39,7 +39,6 @@ const SurveyDetail = () => {
 
 export default SurveyDetail;
 
-// ✅ Styled Components
 const Wrapper = styled.div`
   height: 100vh;
 `;

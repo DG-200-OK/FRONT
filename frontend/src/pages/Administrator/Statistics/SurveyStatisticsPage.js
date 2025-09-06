@@ -1,5 +1,3 @@
-// 요소별, 캡션별 통계
-
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import styled from "styled-components";

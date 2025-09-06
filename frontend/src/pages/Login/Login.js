@@ -1,4 +1,3 @@
-// ✅ Login.js - 서버 연동 로그인 구현
 import React, { Component } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
@@ -111,7 +110,7 @@ class Login extends Component {
       });
 
       const data = response.data;
-      console.log("✅ 로그인 성공:", data);
+      console.log("로그인 성공:", data);
 
       localStorage.setItem('user_id', String(data.responseData.userId));
 
@@ -125,9 +124,9 @@ class Login extends Component {
       }
 
     } catch (error) {
-      console.error("❌ 로그인 오류:", error);
+      console.error("로그인 오류:", error);
       if (error.response) {
-        console.error("❌ 로그인 실패 응답:", error.response.data);
+        console.error("로그인 실패 응답:", error.response.data);
         alert(error.response.data.message || "로그인 실패");
       } else {
         alert("서버 오류로 로그인에 실패했습니다.");

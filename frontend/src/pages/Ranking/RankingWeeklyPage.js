@@ -27,7 +27,7 @@ const RankingWeeklyPage = () => {
         });
         setRankingData(response.data);
       } catch (err) {
-        console.error("❌ 랭킹 데이터 오류:", err);
+        console.error("랭킹 데이터 오류:", err);
       }
     };
     fetchRanking();

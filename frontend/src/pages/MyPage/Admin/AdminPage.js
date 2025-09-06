@@ -125,29 +125,26 @@ const AdminPage = () => {
     }
 
     try {
-      // 1. Upload image first
       const imageFormData = new FormData();
       imageFormData.append("image", imageFile);
 
       console.log("📡 이미지 업로드 시작...");
       const imageRes = await axiosInstance.post("/api/surveys/upload-image/", imageFormData, {
         headers: {
-          // axios will set Content-Type to multipart/form-data automatically
           'ngrok-skip-browser-warning': 'true'
         },
         withCredentials: true,
       });
 
       const imageUrl = imageRes.data.imageUrl;
-      console.log("✅ 이미지 업로드 성공, URL:", imageUrl);
+      console.log("이미지 업로드 성공, URL:", imageUrl);
 
-      // 2. Submit survey data with the image URL
       const surveyPayload = {
         image_url: imageUrl,
         country: formData.country,
         category: formData.category,
-        title: formData.entityName, // entityName -> title
-        captions: formData.captions.map(captionText => ({ text: captionText, type: 'generated' })) // captions to array of objects
+        title: formData.entityName, 
+        captions: formData.captions.map(captionText => ({ text: captionText, type: 'generated' })) 
       };
 
       console.log("📡 설문 데이터 전송 시작...", surveyPayload);

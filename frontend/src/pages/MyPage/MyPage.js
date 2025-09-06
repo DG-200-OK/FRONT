@@ -122,9 +122,9 @@ const MyPage = () => {
         },
         withCredentials: true,
       });
-      console.log("✅ 서버 응답:", response.data);
+      console.log("서버 응답:", response.data);
     } catch (err) {
-      console.error("❌ 서버 요청 실패:", err);
+      console.error("서버 요청 실패:", err);
     }
   };
 
@@ -176,11 +176,11 @@ const MyPage = () => {
         withCredentials: true,
       });
 
-      alert("✅ 닉네임이 변경되었습니다.");
+      alert("닉네임이 변경되었습니다.");
       setOriginalNickname(nickname);
 
     } catch (err) {
-      alert("❌ 닉네임 변경 중 오류 발생");
+      alert("닉네임 변경 중 오류 발생");
       console.error(err);
     }
   };

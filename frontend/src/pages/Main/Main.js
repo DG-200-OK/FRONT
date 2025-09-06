@@ -28,10 +28,6 @@ const HeroSection = styled.section`
   }
 `;
 
-
-
-
-
 const BearImage = styled.img`
   width: 95%;
   height: 95%;
@@ -40,7 +36,6 @@ const BearImage = styled.img`
     width: 280px;
   }
 `;
-
 
 const Dots = styled.div`
   display: flex;

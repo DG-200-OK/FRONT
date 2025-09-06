@@ -278,7 +278,7 @@ const Administrator = () => {
                   등록자: <strong>{item.admin || "알 수 없음"}</strong>
                 </SurveyText>
                 {activeTab === "rejected" && item.rejectReason && (
-                  <SurveyText>❌ 거절 사유: {item.rejectReason}</SurveyText>
+                  <SurveyText>거절 사유: {item.rejectReason}</SurveyText>
                 )}
               </SurveyContent>
 
