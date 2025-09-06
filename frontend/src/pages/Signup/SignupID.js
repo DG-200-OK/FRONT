@@ -1,11 +1,9 @@
-// ✅ SignupID.js 회원가입 처리 코드 반영
 import React, { useState } from "react";
 import styled from "styled-components";
-import LogoImage from "../../assets/img/logo.png";
-import { useNavigate } from "react-router-dom"; 
-// 회원가입하면 자동으로 프로필이미지 기본이미지로 설정정
-import DefaultProfile from "../../assets/img/profile.png";
-
+import LogoImage from "@/assets/img/logo.png";
+import { useNavigate } from "react-router-dom";
+import axiosInstance from "@/axiosInstance";
+import DefaultProfile from "@/assets/img/profile.png";
 
 const Container = styled.div`
   display: flex;
@@ -149,28 +147,18 @@ const SignupID = () => {
     });
   
     try {
-      const response = await fetch("https://famous-blowfish-plainly.ngrok-free.app/api/auth/signup", {
-        method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
+      const response = await axiosInstance.post("/api/auth/signup", {
+        username: id,
+        password
+      }, {
+        headers: {
           'Accept': 'application/json',
           'ngrok-skip-browser-warning': 'true'
         },
-        body: JSON.stringify({
-          username: id,
-          password
-        }),
-        credentials: "include",
+        withCredentials: true,
       });
-      console.log(response);
-  
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error("서버 응답이 올바르지 않습니다.");
-      }
 
-      const data = await response.json();
-      console.log("회원가입 성공:", data);
+      console.log("회원가입 성공:", response.data);
 
       setModalMessage("🎉 회원가입 성공! 메인화면으로 이동합니다.");
       setIsError(false);
@@ -178,7 +166,8 @@ const SignupID = () => {
     
     } catch (error) {
       console.error("회원가입 실패:", error);
-      setModalMessage("회원가입 실패! 다른 아이디를 사용하세요");
+      const message = error.response?.data?.message || "회원가입 실패! 다른 아이디를 사용하세요";
+      setModalMessage(message);
       setIsError(true);
       setShowModal(true);
     }

@@ -8,7 +8,8 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import MypageLayout from "../../../layouts/MypageLayout";
+import MypageLayout from "@/layouts/MypageLayout";
+import axiosInstance from "@/axiosInstance";
 
 const Content = styled.div`
   flex: 1;
@@ -129,12 +130,12 @@ const AdminDetailPage = () => {
   useEffect(() => {
     const fetchSurveyDetails = async () => {
       try {
-        const res = await fetch(`https://famous-blowfish-plainly.ngrok-free.app/api/surveys/${id}`, {
+        const response = await axiosInstance.get(`/api/surveys/${id}`, {
           headers: {
             'ngrok-skip-browser-warning': 'true'
           }
         });
-        const data = await res.json();
+        const data = response.data;
 
         const mockVotes = {
           0: { 1: 5, 2: 3, 3: 2, 4: 1, 5: 0 },
@@ -186,7 +187,9 @@ const AdminDetailPage = () => {
         const votes = survey.votes?.[i] || {};
         csv += `${caption},${votes[1] || 0},${votes[2] || 0},${votes[3] || 0},${votes[4] || 0},${votes[5] || 0}\n`;
       });
-      const blob = new Blob([csv], { type: "text/csv" });
+      const blob = new Blob([csv], {
+        type: "text/csv",
+      });
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;

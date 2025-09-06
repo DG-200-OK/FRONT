@@ -1,10 +1,10 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import naverLogo from "../../assets/img/naver.png";
-import kakaoLogo from "../../assets/img/kakao.png";
-import googleLogo from "../../assets/img/google.png";
-import LogoImage from "../../assets/img/logo.png";
+import naverLogo from "@/assets/img/naver.png";
+import kakaoLogo from "@/assets/img/kakao.png";
+import googleLogo from "@/assets/img/google.png";
+import LogoImage from "@/assets/img/logo.png";
 
 // 전체 컨테이너
 const Container = styled.div`

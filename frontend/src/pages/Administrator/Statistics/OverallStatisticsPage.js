@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
-import Header from "../../../components/AdminHeader";
-import surveyData from "../../../data/SurveyData";
+import Header from "@/components/AdminHeader";
+import surveyData from "@/data/SurveyData";
 import { useNavigate } from "react-router-dom";
 
 import {

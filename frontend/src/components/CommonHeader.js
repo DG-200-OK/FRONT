@@ -1,7 +1,7 @@
 import React from "react";
 import { NavLink,useLocation } from "react-router-dom";
 import styled from "styled-components";
-import LogoImage from "../assets/img/logo.png";
+import LogoImage from "@/assets/img/logo.png";
 
 const HeaderContainer = styled.header`
   width: 100%;

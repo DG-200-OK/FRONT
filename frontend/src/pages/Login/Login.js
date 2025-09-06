@@ -2,7 +2,8 @@
 import React, { Component } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import LoginLogoImage from "../../assets/img/loginlogo.png";
+import LoginLogoImage from "@/assets/img/loginlogo.png";
+import axiosInstance from "@/axiosInstance";
 
 function withRouter(Component) {
   return (props) => {
@@ -96,33 +97,23 @@ class Login extends Component {
     e.preventDefault();
     const { email, password } = this.state;
 
-
     try {
       const formData = new URLSearchParams();
       formData.append('username', email.trim());
       formData.append('password', password.trim());
 
-      const response = await fetch("https://famous-blowfish-plainly.ngrok-free.app/api/auth/login", {    
-        method: "POST",
-        headers: { 
+      const response = await axiosInstance.post("/api/auth/login", formData, {
+        headers: {
           "Content-Type": "application/x-www-form-urlencoded",
           'ngrok-skip-browser-warning': 'true'
         },
-        body: formData,
-        credentials: "include",
+        withCredentials: true,
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error("❌ 로그인 실패 응답:", errorData); // ✅ 이 줄 추가
-        alert(errorData.message || "로그인 실패");
-        return;
-      }
-
-      const data = await response.json();
+      const data = response.data;
       console.log("✅ 로그인 성공:", data);
 
-      localStorage.setItem('user_id', data.user.Key);
+      localStorage.setItem('user_id', String(data.responseData.userId));
 
       if (data.role === "admin") {
         console.log("관리자 로그인 성공!");
@@ -132,11 +123,15 @@ class Login extends Component {
         alert("로그인에 성공했습니다.");
         this.props.navigate("/mainpage");
       }
-      
 
     } catch (error) {
       console.error("❌ 로그인 오류:", error);
-      alert("서버 오류로 로그인에 실패했습니다.");
+      if (error.response) {
+        console.error("❌ 로그인 실패 응답:", error.response.data);
+        alert(error.response.data.message || "로그인 실패");
+      } else {
+        alert("서버 오류로 로그인에 실패했습니다.");
+      }
     }
   };
 

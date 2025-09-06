@@ -1,15 +1,15 @@
 // src/data/surveyData.js
-import BulgogiImg from "../assets/img/bulgogi.png";
-import BibimbabImg from "../assets/img/bibimbab.png";
-import KimchiImg from "../assets/img/kimchi.png";
-import HanbokImg from "../assets/img/hanbok.png";
-import GyeongbokgungImg from "../assets/img/gyeongbokgung.png";
-import ChineseWallImg from "../assets/img/chinese_wall.png";
-import JjajangmyeonImg from "../assets/img/jjajangmyeon.png";
-import CheongsamImg from "../assets/img/cheongsam.png";
-import SushiImg from "../assets/img/sushi.png";
-import KimonoImg from "../assets/img/kimono.png";
-import TokyoTowerImg from "../assets/img/tokyo_tower.png";
+import BulgogiImg from "@/assets/img/bulgogi.png";
+import BibimbabImg from "@/assets/img/bibimbab.png";
+import KimchiImg from "@/assets/img/kimchi.png";
+import HanbokImg from "@/assets/img/hanbok.png";
+import GyeongbokgungImg from "@/assets/img/gyeongbokgung.png";
+import ChineseWallImg from "@/assets/img/chinese_wall.png";
+import JjajangmyeonImg from "@/assets/img/jjajangmyeon.png";
+import CheongsamImg from "@/assets/img/cheongsam.png";
+import SushiImg from "@/assets/img/sushi.png";
+import KimonoImg from "@/assets/img/kimono.png";
+import TokyoTowerImg from "@/assets/img/tokyo_tower.png";
 
 const surveys = [
   {

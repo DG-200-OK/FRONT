@@ -1,10 +1,10 @@
-import axios from "axios";
+import axiosInstance from "@/axiosInstance";
 import React from "react";
 import styled from "styled-components";
 import { useLocation, useNavigate } from "react-router-dom";
-import Header from "../../components/AdminHeader";
+import Header from "@/components/AdminHeader";
 import { useParams } from "react-router-dom";
-import surveyData from "../../data/SurveyData";
+import surveyData from "@/data/SurveyData";
 
 const Container = styled.div`
   padding: 100px 40px 40px;
@@ -130,7 +130,7 @@ const AdminSurveyDetail = () => {
 
   const handleApprove = async () => {
     try {
-      await axios.post(`/admin/surveys/${_id}/approve`);
+      await axiosInstance.post(`/admin/surveys/${_id}/approve`);
       alert("해당 설문이 승인되었습니다.");
       navigate(-1);
     } catch (err) {
@@ -143,7 +143,7 @@ const AdminSurveyDetail = () => {
     if (!reason) return;
 
     try {
-      await axios.patch(`/admin/surveys/${_id}/reject`, { reason });
+      await axiosInstance.patch(`/admin/surveys/${_id}/reject`, { reason });
       alert("해당 설문이 거절되었습니다.");
       navigate(-1);
     } catch (err) {

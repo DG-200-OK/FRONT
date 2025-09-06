@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { Link, useNavigate } from "react-router-dom";
-import MypageLayout from "../../../layouts/MypageLayout";
+import MypageLayout from "@/layouts/MypageLayout";
+import axiosInstance from "@/axiosInstance";
 
 const SectionTitle = styled.h2`
   font-size: 18px;
@@ -115,7 +116,7 @@ const AdminPage = () => {
     console.log("선택된 파일 👉", file);
   };
 
-    const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     if (!imageFile) {
@@ -129,21 +130,15 @@ const AdminPage = () => {
       imageFormData.append("image", imageFile);
 
       console.log("📡 이미지 업로드 시작...");
-      const imageRes = await fetch("https://famous-blowfish-plainly.ngrok-free.app/api/surveys/upload-image/", {
-        method: "POST",
+      const imageRes = await axiosInstance.post("/api/surveys/upload-image/", imageFormData, {
         headers: {
+          // axios will set Content-Type to multipart/form-data automatically
           'ngrok-skip-browser-warning': 'true'
         },
-        body: imageFormData,
-        credentials: "include",
+        withCredentials: true,
       });
 
-      if (!imageRes.ok) {
-        throw new Error("이미지 업로드에 실패했습니다.");
-      }
-
-      const imageData = await imageRes.json();
-      const imageUrl = imageData.imageUrl;
+      const imageUrl = imageRes.data.imageUrl;
       console.log("✅ 이미지 업로드 성공, URL:", imageUrl);
 
       // 2. Submit survey data with the image URL
@@ -156,34 +151,27 @@ const AdminPage = () => {
       };
 
       console.log("📡 설문 데이터 전송 시작...", surveyPayload);
-      const surveyRes = await fetch("https://famous-blowfish-plainly.ngrok-free.app/api/surveys/", {
-        method: "POST",
+      await axiosInstance.post("/api/surveys/", surveyPayload, {
         headers: {
-          'Content-Type': 'application/json',
           'ngrok-skip-browser-warning': 'true'
         },
-        body: JSON.stringify(surveyPayload),
-        credentials: "include",
+        withCredentials: true,
       });
 
-      if (surveyRes.ok) {
-        alert("등록 완료!");
-        setFormData({
-          country: "",
-          category: "",
-          entityName: "",
-          captions: ["", "", "", "", ""],
-        });
-        setImageFile(null);
-        // Optionally, you can clear the file input as well
-        document.getElementById("imageUpload").value = "";
-      } else {
-        const error = await surveyRes.json();
-        alert("등록 실패: " + (error.detail || "알 수 없는 오류"));
-      }
+      alert("등록 완료!");
+      setFormData({
+        country: "",
+        category: "",
+        entityName: "",
+        captions: ["", "", "", "", ""],
+      });
+      setImageFile(null);
+      document.getElementById("imageUpload").value = "";
+
     } catch (err) {
       console.error("❌ 설문 등록 중 오류 발생:", err);
-      alert(`오류가 발생했습니다: ${err.message}`);
+      const errorDetail = err.response?.data?.detail || err.message || "알 수 없는 오류";
+      alert(`오류가 발생했습니다: ${errorDetail}`);
     }
   };
   
@@ -253,6 +241,7 @@ const AdminPage = () => {
           <FormGroup>
             <Label>이미지 업로드</Label>
             <Input
+              id="imageUpload"
               type="file"
               accept="image/*"
               onChange={handleImageChange}

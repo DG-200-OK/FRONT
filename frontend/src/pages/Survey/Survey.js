@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import SurveypageLayout from "../../layouts/SurveypageLayout";
+import SurveypageLayout from "@/layouts/SurveypageLayout";
+import axiosInstance from "@/axiosInstance";
 
 const Survey = () => {
   const navigate = useNavigate();
@@ -19,19 +20,31 @@ const Survey = () => {
       return;
     }
 
-    fetch("https://famous-blowfish-plainly.ngrok-free.app/api/surveys", {
-      headers: {
-        'Accept': 'application/json',
-        'ngrok-skip-browser-warning': 'true',
-        'user-id': userId
-      },
-      credentials: "include",
-    })
-      .then((res) => res.json())
-      .then((data) => setSurveys(data));
+    const fetchSurveys = async () => {
+      try {
+        const response = await axiosInstance.get("/api/surveys", {
+          headers: {
+            'Accept': 'application/json',
+            'ngrok-skip-browser-warning': 'true',
+            'user-id': userId
+          },
+          withCredentials: true,
+        });
+        // setSurveys(response.data);
+        setSurveys(
+          Array.isArray(response.data)
+            ? response.data
+            : (response.data?.responseData ?? [])
+        );
+      } catch (error) {
+        console.error("Failed to fetch surveys:", error);
+      }
+    };
+
+    fetchSurveys();
   }, [navigate]);
 
-  const filtered = surveys.filter((item) => {
+  const filtered = (Array.isArray(surveys) ? surveys : []).filter((item) => {
     const countryMatch =
       selectedCountries.length === 0 || selectedCountries.includes(item.country);
 

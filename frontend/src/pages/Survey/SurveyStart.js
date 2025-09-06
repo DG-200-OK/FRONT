@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
-import CommonHeader from "../../components/CommonHeader";
-import BulgogiImg from "../../assets/img/bulgogi.png";
+import CommonHeader from "@/components/CommonHeader";
+import BulgogiImg from "@/assets/img/bulgogi.png";
+import axiosInstance from "@/axiosInstance";
 
 // --- Styled Components (from previous step) ---
 const SurveyContainer = styled.div`
@@ -185,26 +186,18 @@ const SurveyStart = () => {
 
     const responsePayload = {
         ...sliderValues,
-        user_id: parseInt(userId, 10),
-        caption_id: currentCaption.Key
+        userId: parseInt(userId, 10),
+        captionId: currentCaption.captionId,
     };
 
     try {
         console.log("📡 응답 전송 시작...", responsePayload);
-        const res = await fetch(`https://famous-blowfish-plainly.ngrok-free.app/api/surveys/responses/`, {
-            method: "POST",
-            headers: { 
-                "Content-Type": "application/json",
+        await axiosInstance.post("/api/surveys/response/", responsePayload, {
+            headers: {
                 'ngrok-skip-browser-warning': 'true'
             },
-            credentials: "include",
-            body: JSON.stringify(responsePayload),
+            withCredentials: true,
         });
-
-        if (!res.ok) {
-            const errorData = await res.json();
-            throw new Error(errorData.detail || "응답 저장에 실패했습니다.");
-        }
 
         console.log("✅ 응답 저장 성공");
 
@@ -213,7 +206,8 @@ const SurveyStart = () => {
         setCurrentIndex(prev => prev + 1);
 
     } catch (err) {
-        alert(`오류가 발생했습니다: ${err.message}`);
+        const errorMessage = err.response?.data?.detail || err.message || "응답 저장에 실패했습니다.";
+        alert(`오류가 발생했습니다: ${errorMessage}`);
         console.error(err);
     }
   };

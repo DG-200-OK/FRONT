@@ -4,8 +4,8 @@ import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
-import Header from "../../../components/AdminHeader";
-import surveyData from "../../../data/SurveyData";
+import Header from "@/components/AdminHeader";
+import surveyData from "@/data/SurveyData";
 
 const Container = styled.div`
   padding: 100px 40px 40px;

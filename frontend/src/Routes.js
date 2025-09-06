@@ -1,30 +1,30 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-import Login from "./pages/Login/Login";
-import Signup from "./pages/Signup/Signup";
-import SignupID from "./pages/Signup/SignupID";
+import Login from "@/pages/Login/Login";
+import Signup from "@/pages/Signup/Signup";
+import SignupID from "@/pages/Signup/SignupID";
 
-import SignupSNS from "./pages/Signup/SignupSNS";
-import Main from "./pages/Main/Main";
-import MainPage from "./pages/Main/MainPage";
-import Survey from "./pages/Survey/Survey";
-import MyPage from "./pages/MyPage/MyPage";
-import SurveyParticipation from "./pages/MyPage/SurveyParticipation";
-import SurveyDetail from "./pages/Survey/SurveyDetail";
-import SurveyStart from "./pages/Survey/SurveyStart";
-import AdminPage from "./pages/MyPage/Admin/AdminPage";
-import AdminListPage from "./pages/MyPage/Admin/AdminListPage";
-import AdminDetailPage from "./pages/MyPage/Admin/AdminDetailPage";
-import RankingWeeklyPage from "./pages/Ranking/RankingWeeklyPage";
-import RankingMonthlyPage from "./pages/Ranking/RankingMonthlyPage";
-import Administrator from "./pages/Administrator/Administrator";
-import AdminSurveyDetail from "./pages/Administrator/AdminSurveyDetail";
-import SurveyResultPage from "./pages/Administrator/SurveyResultPage";
-import SurveyStatisticsPage from "./pages/Administrator/Statistics/SurveyStatisticsPage";
-import CountryStatisticsPage from "./pages/Administrator/Statistics/CountryStatisticsPage";
-import CategoryStatisticsPage from "./pages/Administrator/Statistics/CategoryStatisticsPage";
-import OverallStatisticsPage from "./pages/Administrator/Statistics/OverallStatisticsPage";
+import SignupSNS from "@/pages/Signup/SignupSNS";
+import Main from "@/pages/Main/Main";
+import MainPage from "@/pages/Main/MainPage";
+import Survey from "@/pages/Survey/Survey";
+import MyPage from "@/pages/MyPage/MyPage";
+import SurveyParticipation from "@/pages/MyPage/SurveyParticipation";
+import SurveyDetail from "@/pages/Survey/SurveyDetail";
+import SurveyStart from "@/pages/Survey/SurveyStart";
+import AdminPage from "@/pages/MyPage/Admin/AdminPage";
+import AdminListPage from "@/pages/MyPage/Admin/AdminListPage";
+import AdminDetailPage from "@/pages/MyPage/Admin/AdminDetailPage";
+import RankingWeeklyPage from "@/pages/Ranking/RankingWeeklyPage";
+import RankingMonthlyPage from "@/pages/Ranking/RankingMonthlyPage";
+import Administrator from "@/pages/Administrator/Administrator";
+import AdminSurveyDetail from "@/pages/Administrator/AdminSurveyDetail";
+import SurveyResultPage from "@/pages/Administrator/SurveyResultPage";
+import SurveyStatisticsPage from "@/pages/Administrator/Statistics/SurveyStatisticsPage";
+import CountryStatisticsPage from "@/pages/Administrator/Statistics/CountryStatisticsPage";
+import CategoryStatisticsPage from "@/pages/Administrator/Statistics/CategoryStatisticsPage";
+import OverallStatisticsPage from "@/pages/Administrator/Statistics/OverallStatisticsPage";
 
 class AppRoutes extends React.Component {
   render() {

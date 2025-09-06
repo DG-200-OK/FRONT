@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
-import CommonHeader from "../components/CommonHeader";
-import SurveypageSidebar from "../components/SurveypageSidebar";
+import CommonHeader from "@/components/CommonHeader";
+import SurveypageSidebar from "@/components/SurveypageSidebar";
 
 const Wrapper = styled.div`
   display: flex;

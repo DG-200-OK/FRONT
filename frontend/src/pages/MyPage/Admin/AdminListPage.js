@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Link, useNavigate } from "react-router-dom";
-import MypageLayout from "../../../layouts/MypageLayout";
-
-// 백엔드 응답에 status 필드 추가해서 승인/거절/대기 구분되게
+import MypageLayout from "@/layouts/MypageLayout";
+import axiosInstance from "@/axiosInstance";
 
 const SectionTitle = styled.h2`
   font-size: 18px;
@@ -145,15 +144,14 @@ const AdminListPage = () => {
   useEffect(() => {
     const fetchSurveys = async () => {
       try {
-        const res = await fetch("https://famous-blowfish-plainly.ngrok-free.app/api/surveys", {
+        const response = await axiosInstance.get("/api/surveys", {
           headers: {
             'Accept': 'application/json',
             'ngrok-skip-browser-warning': 'true'
           },
         });
-        const data = await res.json();
-        setSurveys(data);
-        setFilteredSurveys(data);
+        setSurveys(response.data);
+        setFilteredSurveys(response.data);
       } catch (err) {
         console.error("❌ 설문 목록 불러오기 실패:", err);
       }

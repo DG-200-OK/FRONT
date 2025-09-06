@@ -1,8 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import BannerImg from "../../assets/img/banner.svg";
-import Header from "../../components/CommonHeader";
+import BannerImg from "@/assets/img/banner.svg";
+import Header from "@/components/CommonHeader";
 
 const Container = styled.div`
   display: flex;
@@ -15,9 +15,9 @@ const HeroSection = styled.section`
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh; /* 💥 전체 화면 높이 */
+  height: 100vh;
   width: 100%;
-  padding-top: 60px; /* 헤더 높이만큼 띄우기 */
+  padding-top: 60px;
   box-sizing: border-box;
   background: #ffffff;
 

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import axios from "axios"; // Axios 추가
-import Header from "../../components/CommonHeader";
+import axiosInstance from "@/axiosInstance";
+import Header from "@/components/CommonHeader";
 
 const Container = styled.div`
   padding: 70px 20px 20px;
@@ -84,7 +84,7 @@ const ContinueButton = styled.button`
 
 const MainPage = () => {
   const navigate = useNavigate();
-  const [surveyData, setSurveyData] = useState([]); // 설문 데이터를 저장할 상태
+  const [surveyData, setSurveyData] = useState([]);
 
   useEffect(() => {
     const fetchSurveys = async () => {
@@ -95,15 +95,17 @@ const MainPage = () => {
           return;
         }
 
-        const response = await axios.get("https://famous-blowfish-plainly.ngrok-free.app/api/surveys", {
+        const response = await axiosInstance.get("/api/surveys", {
           headers: {
             'Accept': 'application/json',
-            'ngrok-skip-browser-warning': 'true', // 중요
+            'ngrok-skip-browser-warning': 'true',
             'user-id': userId
           },
         });
-        console.log("서버 응답:", response.data); // 응답 데이터 구조 확인
-        setSurveyData(response.data);
+        console.log("서버 응답:", response.data);
+        // setSurveyData(response.data);
+        setSurveyData(Array.isArray(response.data) ? response.data : (response.data?.responseData ?? []));
+        console.log("설문 데이터:", Array.isArray(response.data) ? response.data : (response.data?.responseData ?? []));
       } catch (error) {
         console.error("설문 데이터를 불러오는 데 실패했습니다.", error);
       }

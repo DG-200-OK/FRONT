@@ -1,10 +1,10 @@
-// ✅ MyPage.js 로그인 사용자 정보 + 프로필/닉네임 업로드 연동 + 중복검사 + 아이디 표시 + 닉네임 수정 아이콘 + 기본 이미지 복원
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { FaPencilAlt } from "react-icons/fa";
-import DefaultProfile from "../../assets/img/profile.png";
-import MypageLayout from "../../layouts/MypageLayout";
+import DefaultProfile from "@/assets/img/profile.png";
+import MypageLayout from "@/layouts/MypageLayout";
+import axiosInstance from "@/axiosInstance";
 
 const InputField = styled.input`
   width: 200px;
@@ -66,47 +66,46 @@ const MyPage = () => {
 
   useEffect(() => {
     const fetchUser = async () => {
-      const res = await fetch("https://famous-blowfish-plainly.ngrok-free.app/api/auth/me", {
-             headers: {
-      'Accept': 'application/json',
-      'ngrok-skip-browser-warning': 'true', // 중요
-    },
-        credentials: "include",
-      });
-  
-      if (res.status === 401) {
-        navigate("/login");
-        return;
-      }
-  
-      const data = await res.json();
-  
-      if (data && data.user) {
-        const name = data.user.nickname || data.user.id;
-        setNickname(name);
-        setOriginalNickname(name);
-        setUserId(data.user.id);
-  
-        if (!data.user.profileImage || data.user.profileImage === "") {
-          const blob = await fetch(DefaultProfile).then(res => res.blob());
-          const base64 = await new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onloadend = () => resolve(reader.result);
-            reader.onerror = reject;
-            reader.readAsDataURL(blob);
-          });
-  
-          setProfileImage(base64);
-          uploadProfileImage(base64);
-        } else {
-          setProfileImage(data.user.profileImage);
+      try {
+        const response = await axiosInstance.get("/api/auth/me", {
+          headers: {
+            'Accept': 'application/json',
+            'ngrok-skip-browser-warning': 'true',
+          },
+          withCredentials: true,
+        });
+
+        const data = response.data;
+        if (data && data.user) {
+          const name = data.user.nickname || data.user.id;
+          setNickname(name);
+          setOriginalNickname(name);
+          setUserId(data.user.id);
+
+          if (!data.user.profileImage || data.user.profileImage === "") {
+            const blob = await fetch(DefaultProfile).then(res => res.blob());
+            const base64 = await new Promise((resolve, reject) => {
+              const reader = new FileReader();
+              reader.onloadend = () => resolve(reader.result);
+              reader.onerror = reject;
+              reader.readAsDataURL(blob);
+            });
+            setProfileImage(base64);
+            uploadProfileImage(base64);
+          } else {
+            setProfileImage(data.user.profileImage);
+          }
         }
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          navigate("/login");
+        }
+        console.error("Failed to fetch user data:", error);
       }
     };
-  
+
     fetchUser();
-  }, []);
-  
+  }, [navigate]);
 
   const handleInputChange = (event) => {
     const newName = event.target.value;
@@ -114,26 +113,19 @@ const MyPage = () => {
     setIsNameValid(newName.length <= 10);
   };
 
-  const uploadProfileImage = (base64) => {
-    fetch("https://famous-blowfish-plainly.ngrok-free.app/api/auth/profile", {
-           headers: {
-      'Accept': 'application/json',
-      'ngrok-skip-browser-warning': 'true', // 중요
-    },
-      method: "PATCH",
-      credentials: "include",
-      body: JSON.stringify({ profileImage: base64 }),
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("업로드 실패");
-        return res.json();
-      })
-      .then((data) => {
-        console.log("✅ 서버 응답:", data);
-      })
-      .catch((err) => {
-        console.error("❌ 서버 요청 실패:", err);
+  const uploadProfileImage = async (base64) => {
+    try {
+      const response = await axiosInstance.patch("/api/auth/profile", { profileImage: base64 }, {
+        headers: {
+          'Accept': 'application/json',
+          'ngrok-skip-browser-warning': 'true',
+        },
+        withCredentials: true,
       });
+      console.log("✅ 서버 응답:", response.data);
+    } catch (err) {
+      console.error("❌ 서버 요청 실패:", err);
+    }
   };
 
   const handleImageChange = (event) => {
@@ -151,7 +143,7 @@ const MyPage = () => {
 
   const handleResetToDefaultImage = () => {
     setProfileImage(DefaultProfile);
-    fetch(DefaultProfile) // fetch하여 base64 변환
+    fetch(DefaultProfile)
       .then(res => res.blob())
       .then(blob => {
         const reader = new FileReader();
@@ -163,42 +155,34 @@ const MyPage = () => {
       });
   };
 
-  const handleNicknameSave = () => {
+  const handleNicknameSave = async () => {
     if (nickname === originalNickname) {
       alert("닉네임이 변경되지 않았습니다.");
       return;
     }
 
-    fetch(`https://famous-blowfish-plainly.ngrok-free.app/api/auth/check-nickname/${nickname}`)
-      .then(res => res.json())
-      .then(data => {
-        if (data.exists) {
-          alert("이미 존재하는 닉네임입니다.");
-          return;
-        }
+    try {
+      const checkResponse = await axiosInstance.get(`/api/auth/check-nickname/${nickname}`);
+      if (checkResponse.data.exists) {
+        alert("이미 존재하는 닉네임입니다.");
+        return;
+      }
 
-        fetch("https://famous-blowfish-plainly.ngrok-free.app/api/auth/nickname", {
-                 headers: {
-      'Accept': 'application/json',
-      'ngrok-skip-browser-warning': 'true', // 중요
-    },
-          method: "PATCH",
-          credentials: "include",
-          body: JSON.stringify({ nickname }),
-        })
-          .then(res => {
-            if (!res.ok) throw new Error("변경 실패");
-            return res.json();
-          })
-          .then(data => {
-            alert("✅ 닉네임이 변경되었습니다.");
-            setOriginalNickname(nickname);
-          })
-          .catch(err => {
-            alert("❌ 닉네임 변경 중 오류 발생");
-            console.error(err);
-          });
+      await axiosInstance.patch("/api/auth/nickname", { nickname }, {
+        headers: {
+          'Accept': 'application/json',
+          'ngrok-skip-browser-warning': 'true',
+        },
+        withCredentials: true,
       });
+
+      alert("✅ 닉네임이 변경되었습니다.");
+      setOriginalNickname(nickname);
+
+    } catch (err) {
+      alert("❌ 닉네임 변경 중 오류 발생");
+      console.error(err);
+    }
   };
 
   return (

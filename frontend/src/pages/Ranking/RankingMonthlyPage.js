@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import RankingpageLayout from "../../layouts/RankingpageLayout";
-import koreaImage from '../../assets/img/Koreaprofile.png';
-import chinaImage from '../../assets/img/Chinaprofile.png';
-import japanImage from '../../assets/img/Japanprofile.png';
+import RankingpageLayout from "@/layouts/RankingpageLayout";
+import koreaImage from '@/assets/img/Koreaprofile.png';
+import chinaImage from '@/assets/img/Chinaprofile.png';
+import japanImage from '@/assets/img/Japanprofile.png';
+import axiosInstance from "@/axiosInstance";
 
 const countryImages = {
   한국: koreaImage,
@@ -16,15 +17,20 @@ const RankingMonthlyPage = () => {
   const countries = ["한국", "중국", "일본"];
 
   useEffect(() => {
-    fetch("https://famous-blowfish-plainly.ngrok-free.app/api/ranking/monthly")
-      .then(res => res.json())
-      .then(data => setRankingData(data))
-      .catch(err => console.error("\u274c 랭킹 데이터 오류:", err));
-  }, {
-    headers: {
-      'Accept': 'application/json',
-      'ngrok-skip-browser-warning': 'true', // 중요
-    },
+    const fetchRanking = async () => {
+      try {
+        const response = await axiosInstance.get("/api/ranking/monthly", {
+          headers: {
+            'Accept': 'application/json',
+            'ngrok-skip-browser-warning': 'true',
+          },
+        });
+        setRankingData(response.data);
+      } catch (err) {
+        console.error("\u274c 랭킹 데이터 오류:", err);
+      }
+    };
+    fetchRanking();
   }, []);
 
   const styles = {

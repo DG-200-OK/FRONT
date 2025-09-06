@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { PieChart, Pie, Cell, Tooltip } from "recharts";
-import CommonHeader from "../../components/CommonHeader";
-import MypageLayout from "../../layouts/MypageLayout";
+import CommonHeader from "@/components/CommonHeader";
+import MypageLayout from "@/layouts/MypageLayout";
+import axiosInstance from "@/axiosInstance";
 
 const COLORS = ["#0088FE", "#FF8042"];
 
@@ -11,27 +12,34 @@ const SurveyParticipation = () => {
   const [surveys, setSurveys] = useState([]);
 
   useEffect(() => {
-    fetch("https://famous-blowfish-plainly.ngrok-free.app/api/auth/me", {
-      headers: {
-      'Accept': 'application/json',
-      'ngrok-skip-browser-warning': 'true', // 중요
-    },
-      credentials: "include",
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setResponses(data.user.responses || []);
-      }); 
+    const fetchData = async () => {
+      try {
+        const [userResponse, surveysResponse] = await Promise.all([
+          axiosInstance.get("/api/auth/me", {
+            headers: {
+              'Accept': 'application/json',
+              'ngrok-skip-browser-warning': 'true',
+            },
+            withCredentials: true,
+          }),
+          axiosInstance.get("/api/surveys", {
+            headers: {
+              'Accept': 'application/json',
+              'ngrok-skip-browser-warning': 'true',
+            },
+            withCredentials: true,
+          })
+        ]);
 
-    fetch("https://famous-blowfish-plainly.ngrok-free.app/api/surveys",{
-      headers: {
-      'Accept': 'application/json',
-      'ngrok-skip-browser-warning': 'true', // 중요
-    },
-      credentials: "include",
-    })
-      .then((res) => res.json())
-      .then((data) => setSurveys(data));
+        setResponses(userResponse.data.user.responses || []);
+        setSurveys(surveysResponse.data);
+
+      } catch (error) {
+        console.error("Failed to fetch data:", error);
+      }
+    };
+
+    fetchData();
   }, []);
 
   const surveyMap = new Map();
