@@ -113,7 +113,7 @@ const Survey = () => {
                 })
               }
             >
-              <SurveyImage src={item.image_url} alt={item.title} />
+              <SurveyImage src={item.imageUrl} alt={item.title} />
               <SurveyContent>
                 <strong style={{ fontSize: "17px" }}>
                   {`${item.country} > ${item.category} > ${item.title}`}
