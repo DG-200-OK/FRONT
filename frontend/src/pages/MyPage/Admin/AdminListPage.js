@@ -22,7 +22,7 @@ const Content = styled.div`
 
 const SurveyGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(3, 1fr); // 2개 고정
+  grid-template-columns: repeat(3, 1fr); 
   gap: 20px;
   margin-top: 20px;
 

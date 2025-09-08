@@ -44,8 +44,8 @@ const SelectButton = styled.button`
   }
 `;
 
-const countries = ["한국", "중국", "일본"];
-const categories = ["architecture", "clothes", "cuisine", "game", "tool"];
+const countries = ["Korea", "China", "Japan"];
+const categories = ["Architecture", "Clothing", "Cuisine", "Game", "Tool"];
 
 const SurveypageSidebar = ({
   selectedCountries,
