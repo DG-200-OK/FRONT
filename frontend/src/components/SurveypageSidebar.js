@@ -55,7 +55,7 @@ const SurveypageSidebar = ({
 }) => {
   return (
     <Sidebar>
-      <SectionTitle>국가</SectionTitle>
+      {/* <SectionTitle>국가</SectionTitle>
       <CheckboxGroup>
         {countries.map((country) => (
           <CheckboxLabel key={country}>
@@ -67,7 +67,7 @@ const SurveypageSidebar = ({
             {country}
           </CheckboxLabel>
         ))}
-      </CheckboxGroup>
+      </CheckboxGroup> */}
 
       <SectionTitle>카테고리</SectionTitle>
       <CheckboxGroup>

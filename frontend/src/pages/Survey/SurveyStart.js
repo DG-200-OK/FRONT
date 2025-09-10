@@ -236,7 +236,7 @@ const SurveyStart = () => {
                 </DescriptionText>
                 
                 <SliderGroup>
-                  <label htmlFor="cultural">Cultural Appropriateness</label>
+                  <label htmlFor="cultural">문화적 적절성</label>
                   <SliderWrapper>
                     <Slider 
                       type="range" 
@@ -252,7 +252,7 @@ const SurveyStart = () => {
                 </SliderGroup>
 
                 <SliderGroup>
-                  <label htmlFor="visual">Visual Detail</label>
+                  <label htmlFor="visual">시각적 적절성</label>
                   <SliderWrapper>
                     <Slider 
                       type="range" 
@@ -268,7 +268,7 @@ const SurveyStart = () => {
                 </SliderGroup>
 
                 <SliderGroup>
-                  <label htmlFor="hallucination">Hallucination</label>
+                  <label htmlFor="hallucination">환각</label>
                   <SliderWrapper>
                      <Slider 
                       type="range" 
