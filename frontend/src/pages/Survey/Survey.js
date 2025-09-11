@@ -109,6 +109,7 @@ const Survey = () => {
                     category: item.category,
                     title: item.title,
                     Key: item.Key,
+                    startIndex: answered,
                   },
                 })
               }

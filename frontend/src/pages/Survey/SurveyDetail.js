@@ -6,7 +6,7 @@ import CommonHeader from "@/components/CommonHeader";
 const SurveyDetail = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { title, image_url, captions, country, category, Key } = location.state || {};
+  const { title, image_url, captions, country, category, Key, startIndex } = location.state || {};
 
   const handleStart = () => {
     const path = `${country} > ${category} > ${title}`;
@@ -16,6 +16,7 @@ const SurveyDetail = () => {
         captions: captions, 
         path,
         surveyId: Key,
+        startIndex: startIndex || 0,
       },
     });
   };

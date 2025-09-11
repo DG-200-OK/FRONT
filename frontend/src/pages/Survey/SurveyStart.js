@@ -147,15 +147,17 @@ const SurveyStart = () => {
   const { title } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
-  const { image, captions = [], path, surveyId } = location.state || {};
+  const { image, captions = [], path, surveyId, startIndex } = location.state || {};
 
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(startIndex);
   const [isSurveyComplete, setIsSurveyComplete] = useState(false);
   const [sliderValues, setSliderValues] = useState({ cultural: 3, visual: 3, hallucination: 3 });
 
   const userId = localStorage.getItem('user_id');
 
   useEffect(() => {
+    console.log("SurveyStart mounted with props:", { title, image, captions, path, surveyId, startIndex });
+
     if (!userId) {
       navigate("/login");
       return;
