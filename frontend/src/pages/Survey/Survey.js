@@ -3,6 +3,8 @@ import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import SurveypageLayout from "@/layouts/SurveypageLayout";
 import axiosInstance from "@/axiosInstance";
+import LazyImage from "@/components/LazyImage";
+import SurveyItemSkeleton from "@/components/SurveyItemSkeleton";
 
 const Survey = () => {
   const navigate = useNavigate();
@@ -12,6 +14,7 @@ const Survey = () => {
   const [selectedCountries, setSelectedCountries] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [sortOrder, setSortOrder] = useState("asc");
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const userId = localStorage.getItem('user_id');
@@ -21,6 +24,7 @@ const Survey = () => {
     }
 
     const fetchSurveys = async () => {
+      setIsLoading(true);
       try {
         const response = await axiosInstance.get("/api/surveys", {
           headers: {
@@ -30,7 +34,6 @@ const Survey = () => {
           },
           withCredentials: true,
         });
-        // setSurveys(response.data);
         setSurveys(
           Array.isArray(response.data)
             ? response.data
@@ -38,6 +41,8 @@ const Survey = () => {
         );
       } catch (error) {
         console.error("Failed to fetch surveys:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -91,45 +96,53 @@ const Survey = () => {
       </PathAndSortContainer>
 
       <SurveyContainer>
-        {sorted.map((item) => {
-          const total = item.captions.length || 5;
-          const answered = Math.round((item.progress || 0) * total);
-          const percent = Math.round((item.progress || 0) * 100);
+        {isLoading ? (
+          <>
+            <SurveyItemSkeleton />
+            <SurveyItemSkeleton />
+            <SurveyItemSkeleton />
+          </>
+        ) : (
+          sorted.map((item) => {
+            const total = item.captions.length || 5;
+            const answered = Math.round((item.progress || 0) * total);
+            const percent = Math.round((item.progress || 0) * 100);
 
-          return (
-            <SurveyItem
-              key={item.Key} 
-              ref={(el) => (surveyRefs.current[item.title] = el)}
-              onClick={() =>
-                navigate(`/survey/${item.title}`, {
-                  state: {
-                    image_url: item.imageUrl,
-                    captions: item.captions,
-                    country: item.country,
-                    category: item.category,
-                    title: item.title,
-                    Key: item.Key,
-                    startIndex: answered,
-                  },
-                })
-              }
-            >
-              <SurveyImage src={item.imageUrl} alt={item.title} />
-              <SurveyContent>
-                <strong style={{ fontSize: "17px" }}>
-                  {`${item.country} > ${item.category} > ${item.title}`}
-                </strong>
-                <ProgressBar value={item.progress || 0} max={1} />
-                <ProgressText>
-                  {`${answered} / ${total} (${percent}%)`}
-                </ProgressText>
-              </SurveyContent>
-              <ContinueButton>
-                {percent >= 100 ? "완료" : "이어서 진행하기"}
-              </ContinueButton>
-            </SurveyItem>
-          );
-        })}
+            return (
+              <SurveyItem
+                key={item.Key} 
+                ref={(el) => (surveyRefs.current[item.title] = el)}
+                onClick={() =>
+                  navigate(`/survey/${item.title}`, {
+                    state: {
+                      image_url: item.imageUrl,
+                      captions: item.captions,
+                      country: item.country,
+                      category: item.category,
+                      title: item.title,
+                      Key: item.Key,
+                      startIndex: answered,
+                    },
+                  })
+                }
+              >
+                <LazyImage src={item.imageUrl} alt={item.title} />
+                <SurveyContent>
+                  <strong style={{ fontSize: "17px" }}>
+                    {`${item.country} > ${item.category} > ${item.title}`}
+                  </strong>
+                  <ProgressBar value={item.progress || 0} max={1} />
+                  <ProgressText>
+                    {`${answered} / ${total} (${percent}%)`}
+                  </ProgressText>
+                </SurveyContent>
+                <ContinueButton>
+                  {percent >= 100 ? "완료" : "이어서 진행하기"}
+                </ContinueButton>
+              </SurveyItem>
+            );
+          })
+        )}
       </SurveyContainer>
     </SurveypageLayout>
   );
@@ -191,14 +204,6 @@ const SurveyItem = styled.div`
     box-shadow: 0 4px 12px rgba(100, 158, 255, 0.2);
     border-color: #649eff;
   }
-`;
-
-const SurveyImage = styled.img`
-  width: 90px;
-  height: 90px;
-  border-radius: 10px;
-  object-fit: cover;
-  margin-right: 20px;
 `;
 
 const SurveyContent = styled.div`

@@ -3,6 +3,8 @@ import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "@/axiosInstance";
 import Header from "@/components/CommonHeader";
+import LazyImage from "@/components/LazyImage";
+import SurveyItemSkeleton from "@/components/SurveyItemSkeleton";
 
 const Container = styled.div`
   padding: 70px 20px 20px;
@@ -43,14 +45,6 @@ const SurveyItem = styled.div`
   }
 `;
 
-const SurveyImage = styled.img`
-  width: 90px;
-  height: 90px;
-  border-radius: 10px;
-  object-fit: cover;
-  margin-right: 20px;
-`;
-
 const SurveyContent = styled.div`
   flex: 1;
 `;
@@ -85,9 +79,11 @@ const ContinueButton = styled.button`
 const MainPage = () => {
   const navigate = useNavigate();
   const [surveyData, setSurveyData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchSurveys = async () => {
+      setIsLoading(true);
       try {
         const userId = localStorage.getItem('user_id');
         if (!userId) {
@@ -103,11 +99,12 @@ const MainPage = () => {
           },
         });
         console.log("서버 응답:", response.data);
-        // setSurveyData(response.data);
         setSurveyData(Array.isArray(response.data) ? response.data : (response.data?.responseData ?? []));
         console.log("설문 데이터:", Array.isArray(response.data) ? response.data : (response.data?.responseData ?? []));
       } catch (error) {
         console.error("설문 데이터를 불러오는 데 실패했습니다.", error);
+      } finally {
+        setIsLoading(false);
       }
     };
   
@@ -160,7 +157,12 @@ const MainPage = () => {
       {/* 진행 중인 설문 */}
       <SurveyContainer>
         <h3>🔍 진행중인 설문</h3>
-        {ongoingSurveys.length === 0 ? (
+        {isLoading ? (
+          <>
+            <SurveyItemSkeleton />
+            <SurveyItemSkeleton />
+          </>
+        ) : ongoingSurveys.length === 0 ? (
           <div>진행중인 설문이 없습니다.</div>
         ) : (
           ongoingSurveys.map((item, index) => {
@@ -184,7 +186,7 @@ const MainPage = () => {
                   })
                 }
               >
-                <SurveyImage src={item.imageUrl} alt={item.title} />
+                <LazyImage src={item.imageUrl} alt={item.title} />
                 <SurveyContent>
                   <strong>{item.title}</strong>
                   <ProgressText>진행상황</ProgressText>
