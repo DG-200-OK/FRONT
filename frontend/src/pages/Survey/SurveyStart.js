@@ -156,8 +156,6 @@ const SurveyStart = () => {
   const userId = localStorage.getItem('user_id');
 
   useEffect(() => {
-    console.log("SurveyStart mounted with props:", { title, image, captions, path, surveyId, startIndex });
-
     if (!userId) {
       navigate("/login");
       return;
@@ -190,7 +188,6 @@ const SurveyStart = () => {
     };
 
     try {
-        console.log("📡 응답 전송 시작...", responsePayload);
         await axiosInstance.post("/api/surveys/response/", responsePayload, {
             headers: {
                 'ngrok-skip-browser-warning': 'true'

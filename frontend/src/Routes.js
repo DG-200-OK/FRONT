@@ -1,5 +1,7 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+
+import PrivateRoute from "./components/PrivateRoute";
 
 import Login from "@/pages/Login/Login";
 import Signup from "@/pages/Signup/Signup";
@@ -26,61 +28,70 @@ import CountryStatisticsPage from "@/pages/Administrator/Statistics/CountryStati
 import CategoryStatisticsPage from "@/pages/Administrator/Statistics/CategoryStatisticsPage";
 import OverallStatisticsPage from "@/pages/Administrator/Statistics/OverallStatisticsPage";
 
+const Root = () => {
+  const isLoggedIn = !!localStorage.getItem('user_id');
+  return isLoggedIn ? <Navigate to="/main" /> : <Navigate to="/login" />;
+};
+
 class AppRoutes extends React.Component {
   render() {
     return (
       <Router>
         <Routes>
-          <Route path="/" element={<Main />} />
-          <Route path="/mainpage" element={<MainPage />} />
+          <Route path="/" element={<Root />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/signupid" element={<SignupID />} />
           <Route path="/signupsns" element={<SignupSNS />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/mypage" element={<MyPage />} />
-          <Route path="/survey" element={<Survey />} />
-          <Route path="/survey/:title" element={<SurveyDetail />} />
-          <Route path="/survey/:title/start" element={<SurveyStart />} />
-          <Route
-            path="/mypage/survey-participation"
-            element={<SurveyParticipation />}
-          />
-          <Route path="/mypage/survey-creation" element={<AdminPage />} />
-          <Route
-            path="/mypage/survey-creation-list"
-            element={<AdminListPage />}
-          />
-          <Route
-            path="/mypage/survey-creation-detail/:id"
-            element={<AdminDetailPage />}
-          />
-          <Route path="/ranking/weekly" element={<RankingWeeklyPage />} />
-          <Route path="/ranking/monthly" element={<RankingMonthlyPage />} />
-          <Route path="/administrator" element={<Administrator />} />
-          <Route
-            path="/administrator/detail/:id"
-            element={<AdminSurveyDetail />}
-          />
-          <Route
-            path="/administrator/result/:id"
-            element={<SurveyResultPage />}
-          />
-          <Route
-            path="/administrator/statistics/:id"
-            element={<SurveyStatisticsPage />}
-          />
-          <Route
-            path="/administrator/statistics/summary/country"
-            element={<CountryStatisticsPage />}
-          />
-          <Route
-            path="/administrator/statistics/summary/category"
-            element={<CategoryStatisticsPage />}
-          />
-          <Route
-            path="/administrator/statistics/summary/overall"
-            element={<OverallStatisticsPage />}
-          />
+          
+          <Route element={<PrivateRoute />}>
+            <Route path="/main" element={<Main />} />
+            <Route path="/mainpage" element={<MainPage />} />
+            <Route path="/mypage" element={<MyPage />} />
+            <Route path="/survey" element={<Survey />} />
+            <Route path="/survey/:title" element={<SurveyDetail />} />
+            <Route path="/survey/:title/start" element={<SurveyStart />} />
+            <Route
+              path="/mypage/survey-participation"
+              element={<SurveyParticipation />}
+            />
+            <Route path="/mypage/survey-creation" element={<AdminPage />} />
+            <Route
+              path="/mypage/survey-creation-list"
+              element={<AdminListPage />}
+            />
+            <Route
+              path="/mypage/survey-creation-detail/:id"
+              element={<AdminDetailPage />}
+            />
+            <Route path="/ranking/weekly" element={<RankingWeeklyPage />} />
+            <Route path="/ranking/monthly" element={<RankingMonthlyPage />} />
+            <Route path="/administrator" element={<Administrator />} />
+            <Route
+              path="/administrator/detail/:id"
+              element={<AdminSurveyDetail />}
+            />
+            <Route
+              path="/administrator/result/:id"
+              element={<SurveyResultPage />}
+            />
+            <Route
+              path="/administrator/statistics/:id"
+              element={<SurveyStatisticsPage />}
+            />
+            <Route
+              path="/administrator/statistics/summary/country"
+              element={<CountryStatisticsPage />}
+            />
+            <Route
+              path="/administrator/statistics/summary/category"
+              element={<CategoryStatisticsPage />}
+            />
+            <Route
+              path="/administrator/statistics/summary/overall"
+              element={<OverallStatisticsPage />}
+            />
+          </Route>
         </Routes>
       </Router>
     );

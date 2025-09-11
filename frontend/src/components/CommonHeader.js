@@ -1,5 +1,5 @@
 import React from "react";
-import { NavLink,useLocation } from "react-router-dom";
+import { NavLink,useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import LogoImage from "@/assets/img/logo.png";
 
@@ -82,7 +82,7 @@ const LogoImageStyled = styled.img`
 `;
 
 const LoginButton = styled(NavLink)`
-  padding: 10px 20px;
+  padding: 6px 20px;
   border: 1px solid #68a0f4;
   border-radius: 999px;
   font-weight: 600;
@@ -96,6 +96,22 @@ const LoginButton = styled(NavLink)`
   }
 `;
 
+const LogoutButton = styled.button`
+  padding: 6px 20px;
+  border: 1px solid #68a0f4;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 12px;
+  color: #000;
+  background-color: white;
+  text-decoration: none;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #f0f6ff;
+  }
+`;
+
 const LoginWrapper = styled.div`
   padding: 10px 10px;
   justify-content: flex-end;
@@ -103,9 +119,20 @@ const LoginWrapper = styled.div`
 `;
 
 const Header = () => {
+  const navigate = useNavigate();
   const location = useLocation();
   const isRanking = location.pathname.startsWith("/ranking");
   const isMypage = location.pathname.startsWith("/mypage");
+
+  const isLoggedIn = !!localStorage.getItem('user_id');
+
+  const handleLogout = () => {
+    if (window.confirm('로그아웃을 하시겠습니까?')) {
+      localStorage.removeItem('user_id');
+      navigate('/login');
+    }
+  };
+
   return (
     <HeaderContainer>
       <LogoWrapper to="/mainpage">
@@ -113,27 +140,29 @@ const Header = () => {
       </LogoWrapper>
 
       <NavButtons>
-      <NavButton to="/survey">
+        <NavButton to="/survey">
           진행 중인 설문조사
         </NavButton>
-      <NavButton
-  to="/ranking/weekly"
-  className={isRanking ? "active" : undefined}
->
-  랭킹 조회
-</NavButton>
-
-<NavButton
-  to="/mypage"
-  className={isMypage ? "active" : undefined}
->
-  마이 페이지
-</NavButton>
-
+        <NavButton
+          to="/ranking/weekly"
+          className={isRanking ? "active" : undefined}
+        >
+          랭킹 조회
+        </NavButton>
+        <NavButton
+          to="/mypage"
+          className={isMypage ? "active" : undefined}
+        >
+          마이 페이지
+        </NavButton>
       </NavButtons>
 
       <LoginWrapper>
-        <LoginButton to="/login">👤</LoginButton>
+        {isLoggedIn ? (
+          <LogoutButton onClick={handleLogout}>로그아웃</LogoutButton>
+        ) : (
+          <LoginButton to="/login">로그인</LoginButton>
+        )}
       </LoginWrapper>
     </HeaderContainer>
   );
