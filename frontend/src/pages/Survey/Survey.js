@@ -15,6 +15,9 @@ const Survey = () => {
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [sortOrder, setSortOrder] = useState("asc");
   const [isLoading, setIsLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 4;
+  const pageNumbersToShow = 5;
 
   useEffect(() => {
     const userId = localStorage.getItem('user_id');
@@ -67,20 +70,33 @@ const Survey = () => {
       : titleB.localeCompare(titleA);
   });
 
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = sorted.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(sorted.length / itemsPerPage);
+
+  const pageGroup = Math.ceil(currentPage / pageNumbersToShow);
+  let startPage = (pageGroup - 1) * pageNumbersToShow + 1;
+  let endPage = Math.min(startPage + pageNumbersToShow - 1, totalPages);
+
+  const pageNumbers = Array.from({ length: (endPage - startPage) + 1 }, (_, i) => startPage + i);
+
   return (
     <SurveypageLayout
       selectedCountries={selectedCountries}
-      handleCountryChange={(country) =>
+      handleCountryChange={(country) => {
         setSelectedCountries((prev) =>
           prev.includes(country) ? prev.filter((c) => c !== country) : [...prev, country]
-        )
-      }
+        );
+        setCurrentPage(1);
+      }}
       selectedCategories={selectedCategories}
-      handleCategoryChange={(category) =>
+      handleCategoryChange={(category) => {
         setSelectedCategories((prev) =>
           prev.includes(category) ? prev.filter((c) => c !== category) : [...prev, category]
-        )
-      }
+        );
+        setCurrentPage(1);
+      }}
     >
       <PathAndSortContainer>
         <CategoryPath>
@@ -101,9 +117,10 @@ const Survey = () => {
             <SurveyItemSkeleton />
             <SurveyItemSkeleton />
             <SurveyItemSkeleton />
+            <SurveyItemSkeleton />
           </>
         ) : (
-          sorted.map((item) => {
+          currentItems.map((item) => {
             const total = item.captions.length || 5;
             const answered = Math.round((item.progress || 0) * total);
             const percent = Math.round((item.progress || 0) * 100);
@@ -144,6 +161,33 @@ const Survey = () => {
           })
         )}
       </SurveyContainer>
+      {!isLoading && totalPages > 1 && (
+        <PaginationContainer>
+          <PageButtonGroup>
+            <PageButton onClick={() => setCurrentPage(1)} disabled={currentPage === 1}>
+              &lt;&lt;
+            </PageButton>
+            <PageButton onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} disabled={currentPage === 1}>
+              &lt;
+            </PageButton>
+            {pageNumbers.map(number => (
+              <PageButton
+                key={number}
+                active={number === currentPage}
+                onClick={() => setCurrentPage(number)}
+              >
+                {number}
+              </PageButton>
+            ))}
+            <PageButton onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages}>
+              &gt;
+            </PageButton>
+            <PageButton onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages}>
+              &gt;&gt;
+            </PageButton>
+          </PageButtonGroup>
+        </PaginationContainer>
+      )}
     </SurveypageLayout>
   );
 };
@@ -242,5 +286,44 @@ const ContinueButton = styled.button`
   transition: background-color 0.2s;
   &:hover {
     background-color: #4a82d9;
+  }
+`;
+
+const PaginationContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 30px;
+`;
+
+const PageButtonGroup = styled.div`
+  display: flex;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  overflow: hidden;
+`;
+
+const PageButton = styled.button`
+  width: 36px;
+  padding: 8px 0px;
+  border: none;
+  border-left: 1px solid #ddd;
+  background-color: ${props => props.active ? '#649eff' : 'white'};
+  color: ${props => props.active ? 'white' : 'black'};
+  cursor: pointer;
+  font-size: 14px;
+
+  &:first-child {
+    border-left: none;
+  }
+
+  &:hover {
+    background-color: #f0f6ff;
+  }
+
+  &:disabled {
+    background-color: #f9f9f9;
+    color: #ccc;
+    cursor: not-allowed;
   }
 `;
