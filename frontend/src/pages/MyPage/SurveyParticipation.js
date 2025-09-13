@@ -31,7 +31,7 @@ const SurveyParticipation = () => {
           })
         ]);
 
-        setResponses(userResponse.data.user.responses || []);
+        setResponses(userResponse.data.responseData.responses || []);
         setSurveys(surveysResponse.data);
 
       } catch (error) {

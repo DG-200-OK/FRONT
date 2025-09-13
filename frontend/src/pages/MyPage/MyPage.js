@@ -76,13 +76,13 @@ const MyPage = () => {
         });
 
         const data = response.data;
-        if (data && data.user) {
-          const name = data.user.nickname || data.user.id;
+        if (data && data.responseData) {
+          const name = data.responseData.username || data.responseData.username;
           setNickname(name);
           setOriginalNickname(name);
-          setUserId(data.user.id);
+          setUserId(data.responseData.username);
 
-          if (!data.user.profileImage || data.user.profileImage === "") {
+          if (!data.responseData.profileImage || data.responseData.profileImage === "") {
             const blob = await fetch(DefaultProfile).then(res => res.blob());
             const base64 = await new Promise((resolve, reject) => {
               const reader = new FileReader();
@@ -93,7 +93,7 @@ const MyPage = () => {
             setProfileImage(base64);
             uploadProfileImage(base64);
           } else {
-            setProfileImage(data.user.profileImage);
+            setProfileImage(data.responseData.profileImage);
           }
         }
       } catch (error) {

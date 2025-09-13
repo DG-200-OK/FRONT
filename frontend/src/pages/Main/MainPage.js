@@ -94,8 +94,7 @@ const MainPage = () => {
         const response = await axiosInstance.get("/api/surveys", {
           headers: {
             'Accept': 'application/json',
-            'ngrok-skip-browser-warning': 'true',
-            'user-id': userId
+            'ngrok-skip-browser-warning': 'true'
           },
         });
         console.log("서버 응답:", response.data);
