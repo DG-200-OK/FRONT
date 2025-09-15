@@ -86,33 +86,40 @@ const Button = styled.button`
 `;
 
 const AdminPage = () => {
-  const navigate = useNavigate();
+  const COUNTRY_MAP = {
+    "한국": "Korea",
+    "일본": "Japan",
+    "중국": "China",
+  };
 
   const [formData, setFormData] = useState({
     country: "",
     category: "",
-    entityName: "",
-    captions: ["", "", "", "", ""],
+    title: "",
+    captions: ["", "", "", ""],
   });
 
   const [imageFile, setImageFile] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
   const creditCount = 3;
+  const [country, setCountry]   = useState("");
+  const [category, setCategory] = useState("");
+  const [title, setTitle]       = useState("");
+  const [levels, setLevels]     = useState({ level1: "", level2: "", level3: "", level4: "" });
 
   const handleChange = (e, index) => {
     const { name, value } = e.target;
-    if (name === "caption") {
-      const updated = [...formData.captions];
-      updated[index] = value;
-      setFormData({ ...formData, captions: updated });
-    } else {
-      setFormData({ ...formData, [name]: value });
+    if (name === "country") return setCountry(value);
+    if (name === "category") return setCategory(value);
+    if (name === "title") return setTitle(value);
+    if (name === "level1" || name === "level2" || name === "level3" || name === "level4") {
+      return setLevels(prev => ({ ...prev, [name]: value }));
     }
   };
 
   const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    setImageFile(file);
+    const file = e.target.files?.[0];
+    setImageFile(file || null);
     console.log("선택된 파일 👉", file);
   };
 
@@ -125,53 +132,45 @@ const AdminPage = () => {
     }
 
     try {
-      const imageFormData = new FormData();
-      imageFormData.append("image", imageFile);
+      const fd = new FormData();
+      fd.append("imageFile", imageFile);        
+      fd.append("country", COUNTRY_MAP[country] || country);
+      fd.append("category", category);
+      fd.append("title", title);
+      fd.append("level1", levels.level1);
+      fd.append("level2", levels.level2);
+      fd.append("level3", levels.level3);
+      fd.append("level4", levels.level4);
 
-      console.log("📡 이미지 업로드 시작...");
-      const imageRes = await axiosInstance.post("/api/surveys/upload-image/", imageFormData, {
+      console.log("설문 데이터 전송 시작...", fd);
+      for (const [k, v] of fd.entries()) {
+        console.log(k, v instanceof File ? `(file) ${v.name}` : v);
+      }
+
+      await axiosInstance.post("/api/surveys/register", fd, {
         headers: {
-          'ngrok-skip-browser-warning': 'true'
-        },
-        withCredentials: true,
-      });
-
-      const imageUrl = imageRes.data.imageUrl;
-      console.log("이미지 업로드 성공, URL:", imageUrl);
-
-      const surveyPayload = {
-        image_url: imageUrl,
-        country: formData.country,
-        category: formData.category,
-        title: formData.entityName, 
-        captions: formData.captions.map(captionText => ({ text: captionText, type: 'generated' })) 
-      };
-
-      console.log("📡 설문 데이터 전송 시작...", surveyPayload);
-      await axiosInstance.post("/api/surveys/", surveyPayload, {
-        headers: {
-          'ngrok-skip-browser-warning': 'true'
+          "ngrok-skip-browser-warning": "true",
         },
         withCredentials: true,
       });
 
       alert("등록 완료!");
-      setFormData({
-        country: "",
-        category: "",
-        entityName: "",
-        captions: ["", "", "", "", ""],
-      });
+      setFormData(prev => ({ ...prev, captions: ["", "", "", ""] }));
+      setCountry("");
+      setCategory("");
+      setTitle("");
+      setLevels({ level1: "", level2: "", level3: "", level4: "" });
       setImageFile(null);
-      document.getElementById("imageUpload").value = "";
+      const el = document.getElementById("imageUpload");
+      if (el) el.value = "";
 
     } catch (err) {
-      console.error("❌ 설문 등록 중 오류 발생:", err);
-      const errorDetail = err.response?.data?.detail || err.message || "알 수 없는 오류";
+      console.error("설문 등록 중 오류 발생:", err);
+      const errorDetail =
+        err.response?.data?.detail || err.message || "알 수 없는 오류";
       alert(`오류가 발생했습니다: ${errorDetail}`);
     }
-  };
-  
+  }; 
 
   return (
     <MypageLayout>
@@ -205,7 +204,7 @@ const AdminPage = () => {
                     type="radio"
                     name="country"
                     value={option}
-                    checked={formData.country === option}
+                    checked={country === option}
                     onChange={handleChange}
                   /> {option}
                 </label>
@@ -222,7 +221,7 @@ const AdminPage = () => {
                     type="radio"
                     name="category"
                     value={option}
-                    checked={formData.category === option}
+                    checked={category === option}
                     onChange={handleChange}
                   /> {option}
                 </label>
@@ -232,7 +231,7 @@ const AdminPage = () => {
 
           <FormGroup>
             <Label>고유명사</Label>
-            <Input name="entityName" value={formData.entityName} onChange={handleChange} />
+            <Input name="title" value={title} onChange={handleChange} />
           </FormGroup>
 
           <FormGroup>
@@ -246,16 +245,31 @@ const AdminPage = () => {
           </FormGroup>
 
           <FormGroup>
-            <Label>캡션 5가지</Label>
-            {formData.captions.map((caption, index) => (
-              <Input
-                key={index}
-                name="caption"
-                placeholder={`${index + 1})`}
-                value={caption}
-                onChange={(e) => handleChange(e, index)}
-              />
-            ))}
+            <Label>캡션 (Levels)</Label>
+            <Input
+              name="level1"
+              placeholder="Level 1"
+              value={levels.level1}
+              onChange={handleChange}
+            />
+            <Input
+              name="level2"
+              placeholder="Level 2"
+              value={levels.level2}
+              onChange={handleChange}
+            />
+            <Input
+              name="level3"
+              placeholder="Level 3"
+              value={levels.level3}
+              onChange={handleChange}
+            />
+            <Input
+              name="level4"
+              placeholder="Level 4"
+              value={levels.level4}
+              onChange={handleChange}
+            />
           </FormGroup>
 
           <ButtonGroup>
