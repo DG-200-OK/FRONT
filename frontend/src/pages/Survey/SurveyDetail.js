@@ -18,6 +18,7 @@ const SurveyDetail = () => {
       [shuffledCaptions[i], shuffledCaptions[j]] = [shuffledCaptions[j], shuffledCaptions[i]];
     }
 
+    sessionStorage.setItem(`survey_${Key}_captions`, JSON.stringify(shuffledCaptions));
     navigate(`/survey/${title}/start`, {
       state: {
         image: image_url,

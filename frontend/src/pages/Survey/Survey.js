@@ -16,6 +16,7 @@ const Survey = () => {
   const [sortOrder, setSortOrder] = useState("random");
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
+  const [randomizedSurveys, setRandomizedSurveys] = useState([]);
   const itemsPerPage = 4;
   const pageNumbersToShow = 5;
 
@@ -68,13 +69,20 @@ const Survey = () => {
     } else if (sortOrder === "desc") {
       sortable.sort((a, b) => (b.title || "").localeCompare(a.title || ""));
     } else if (sortOrder === "random") {
+      // 랜덤 정렬이 선택되었을 때, 기존 랜덤 순서가 있으면 사용
+      if (randomizedSurveys.length === filtered.length &&
+          randomizedSurveys.every(item => filtered.find(f => f.Key === item.Key))) {
+        return randomizedSurveys;
+      }
+      // 새로운 랜덤 정렬 생성
       for (let i = sortable.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [sortable[i], sortable[j]] = [sortable[j], sortable[i]];
       }
+      setRandomizedSurveys([...sortable]);
     }
     return sortable;
-  }, [filtered, sortOrder]);
+  }, [filtered, sortOrder, randomizedSurveys]);
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -95,6 +103,7 @@ const Survey = () => {
           prev.includes(country) ? prev.filter((c) => c !== country) : [...prev, country]
         );
         setCurrentPage(1);
+        setRandomizedSurveys([]);
       }}
       selectedCategories={selectedCategories}
       handleCategoryChange={(category) => {
@@ -102,6 +111,7 @@ const Survey = () => {
           prev.includes(category) ? prev.filter((c) => c !== category) : [...prev, category]
         );
         setCurrentPage(1);
+        setRandomizedSurveys([]);
       }}
     >
       <PathAndSortContainer>
@@ -112,9 +122,18 @@ const Survey = () => {
         </CategoryPath>
         <SortControls>
           <strong>정렬:</strong>
-          <button onClick={() => setSortOrder("asc")}>오름차순</button>
-          <button onClick={() => setSortOrder("desc")}>내림차순</button>
-          <button onClick={() => setSortOrder("random")}>랜덤</button>
+          <button onClick={() => {
+            setSortOrder("asc");
+            setRandomizedSurveys([]);
+          }}>오름차순</button>
+          <button onClick={() => {
+            setSortOrder("desc");
+            setRandomizedSurveys([]);
+          }}>내림차순</button>
+          <button onClick={() => {
+            setSortOrder("random");
+            setRandomizedSurveys([]);
+          }}>랜덤</button>
         </SortControls>
       </PathAndSortContainer>
 

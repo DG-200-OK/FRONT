@@ -289,7 +289,19 @@ const Breadcrumbs = styled.nav`
     const { title } = useParams();
     const location = useLocation();
     const navigate = useNavigate();
-    const { image, captions = [], path, surveyId, startIndex } = location.state || {};
+    const { image, captions: captionsFromLocation = [], path, surveyId, startIndex } = location.state || {};
+
+    const captions = useMemo(() => {
+      if (!surveyId) return captionsFromLocation;
+      try {
+        const item = sessionStorage.getItem(`survey_${surveyId}_captions`);
+        const stored = item ? JSON.parse(item) : null;
+        return stored && stored.length > 0 ? stored : captionsFromLocation;
+      } catch (e) {
+        console.error("Failed to parse captions from sessionStorage", e);
+        return captionsFromLocation;
+      }
+    }, [surveyId, captionsFromLocation]);
 
     const [currentIndex, setCurrentIndex] = useState(startIndex);
     const [isSurveyComplete, setIsSurveyComplete] = useState(false);
