@@ -294,6 +294,7 @@ const Breadcrumbs = styled.nav`
     const [currentIndex, setCurrentIndex] = useState(startIndex);
     const [isSurveyComplete, setIsSurveyComplete] = useState(false);
     const [sliderValues, setSliderValues] = useState({ cultural: 3, visual: 3, hallucination: 3 });
+    const [startTime, setStartTime] = useState(Date.now());
     const crumbs = useMemo(() => splitBreadcrumb(path, title), [path, title]);
 
     const userId = localStorage.getItem('user_id');
@@ -306,6 +307,7 @@ const Breadcrumbs = styled.nav`
       if (currentIndex >= captions.length && captions.length > 0) {
         setIsSurveyComplete(true);
       }
+      setStartTime(Date.now());
     }, [currentIndex, captions.length, navigate, userId]);
 
     const handleSliderChange = (type, value) => {
@@ -318,6 +320,8 @@ const Breadcrumbs = styled.nav`
     const handleNext = async () => {
       if (isSurveyComplete) return;
 
+      const responseTime = (Date.now() - startTime) / 1000;
+
       const currentCaption = captions[currentIndex];
       if (!currentCaption) {
           alert("현재 캡션 정보를 찾을 수 없습니다.");
@@ -328,6 +332,7 @@ const Breadcrumbs = styled.nav`
           ...sliderValues,
           userId: parseInt(userId, 10),
           captionId: currentCaption.captionId,
+          responseTime: responseTime,
       };
 
       try {
