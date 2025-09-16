@@ -1,5 +1,5 @@
 import React from "react";
-import { NavLink,useLocation, useNavigate } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import LogoImage from "@/assets/img/logo.png";
 
@@ -54,7 +54,7 @@ const NavButton = styled(NavLink)`
   }
 
   &.active {
-      font-weight: bold;
+    font-weight: bold;
     color: #4a82d9;
   }
 
@@ -124,12 +124,12 @@ const Header = () => {
   const isRanking = location.pathname.startsWith("/ranking");
   const isMypage = location.pathname.startsWith("/mypage");
 
-  const isLoggedIn = !!localStorage.getItem('user_id');
+  const isLoggedIn = !!localStorage.getItem("user_id");
 
   const handleLogout = () => {
-    if (window.confirm('로그아웃을 하시겠습니까?')) {
-      localStorage.removeItem('user_id');
-      navigate('/login');
+    if (window.confirm("로그아웃을 하시겠습니까?")) {
+      localStorage.removeItem("user_id");
+      navigate("/login");
     }
   };
 
@@ -140,19 +140,11 @@ const Header = () => {
       </LogoWrapper>
 
       <NavButtons>
-        <NavButton to="/survey">
-          진행 중인 설문조사
+        <NavButton to="/survey">진행 중인 설문조사</NavButton>
+        <NavButton to="/chart" className={isRanking ? "active" : undefined}>
+          차트 조회
         </NavButton>
-        <NavButton
-          to="/ranking/weekly"
-          className={isRanking ? "active" : undefined}
-        >
-          랭킹 조회
-        </NavButton>
-        <NavButton
-          to="/mypage"
-          className={isMypage ? "active" : undefined}
-        >
+        <NavButton to="/mypage" className={isMypage ? "active" : undefined}>
           마이 페이지
         </NavButton>
       </NavButtons>

@@ -1,0 +1,95 @@
+.chart-container {
+  flex: 1; /* 남은 공간을 모두 차지 */
+  display: flex;
+  flex-direction: column;
+}
+
+.chart-legend {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-bottom: 8px;
+  font-size: 12px;
+  color: #555;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.legend-dot.people {
+  background-color: #a78bfa; /* 연한 보라색 */
+}
+
+.legend-dot.agent {
+  background-color: #6d28d9; /* 진한 보라색 */
+}
+
+.chart-body {
+  display: flex;
+  flex: 1;
+  position: relative;
+}
+
+.y-axis {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  font-size: 10px;
+  color: #888;
+  padding-right: 4px;
+  text-align: right;
+  border-right: 1px solid #e0e0e0;
+  height: 100px; /* 차트 높이 고정 */
+}
+
+.chart-bars {
+  flex: 1;
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end; /* 바가 아래에서부터 자라나도록 */
+  padding-left: 10px;
+  border-bottom: 1px solid #e0e0e0;
+  height: 100px; /* Y축과 높이 동일하게 */
+}
+
+.bar-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 100px; /* 부모(chart-bars)의 높이를 기준으로 함 */
+}
+
+.bar {
+  width: 12px;
+  border-radius: 4px 4px 0 0;
+  transition: height 0.3s ease-out;
+}
+
+.bar.people {
+  background-color: #a78bfa;
+}
+
+.bar.agent {
+  background-color: #6d28d9;
+}
+
+.bar-label {
+  font-size: 11px;
+  color: #666;
+}

@@ -1,5 +1,10 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 
 import PrivateRoute from "./components/PrivateRoute";
 
@@ -18,8 +23,7 @@ import SurveyStart from "@/pages/Survey/SurveyStart";
 import AdminPage from "@/pages/MyPage/Admin/AdminPage";
 import AdminListPage from "@/pages/MyPage/Admin/AdminListPage";
 import AdminDetailPage from "@/pages/MyPage/Admin/AdminDetailPage";
-import RankingWeeklyPage from "@/pages/Ranking/RankingWeeklyPage";
-import RankingMonthlyPage from "@/pages/Ranking/RankingMonthlyPage";
+import ChartPage from "@/pages/Chart/ChartPage";
 import Administrator from "@/pages/Administrator/Administrator";
 import AdminSurveyDetail from "@/pages/Administrator/AdminSurveyDetail";
 import SurveyResultPage from "@/pages/Administrator/SurveyResultPage";
@@ -29,7 +33,7 @@ import CategoryStatisticsPage from "@/pages/Administrator/Statistics/CategorySta
 import OverallStatisticsPage from "@/pages/Administrator/Statistics/OverallStatisticsPage";
 
 const Root = () => {
-  const isLoggedIn = !!localStorage.getItem('user_id');
+  const isLoggedIn = !!localStorage.getItem("user_id");
   return isLoggedIn ? <Navigate to="/main" /> : <Navigate to="/login" />;
 };
 
@@ -43,7 +47,7 @@ class AppRoutes extends React.Component {
           <Route path="/signup" element={<Signup />} />
           <Route path="/signupid" element={<SignupID />} />
           <Route path="/signupsns" element={<SignupSNS />} />
-          
+
           <Route element={<PrivateRoute />}>
             <Route path="/main" element={<Main />} />
             <Route path="/mainpage" element={<MainPage />} />
@@ -64,8 +68,7 @@ class AppRoutes extends React.Component {
               path="/mypage/survey-creation-detail/:id"
               element={<AdminDetailPage />}
             />
-            <Route path="/ranking/weekly" element={<RankingWeeklyPage />} />
-            <Route path="/ranking/monthly" element={<RankingMonthlyPage />} />
+            <Route path="/chart" element={<ChartPage />} />
             <Route path="/administrator" element={<Administrator />} />
             <Route
               path="/administrator/detail/:id"

@@ -103,7 +103,7 @@ const SurveyParticipation = () => {
           </ChartRow>
 
           <ParticipatedSection>
-            <h3>📌 참여한 설문 목록</h3>
+            <h3><span role="img" aria-label="pushpin">📌</span> 참여한 설문 목록</h3>
             <p>총 참여 설문 수: {participatedSurveys.length}</p>
             {participatedSurveys.length === 0 ? (
               <p>아직 참여한 설문이 없습니다.</p>
