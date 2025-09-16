@@ -16,63 +16,60 @@ const SurveyParticipation = () => {
       try {
         const [userResponse, surveysResponse] = await Promise.all([
           axiosInstance.get("/api/auth/me", {
-            headers: {
-              'Accept': 'application/json',
-              'ngrok-skip-browser-warning': 'true',
-            },
+            headers: { Accept: "application/json", "ngrok-skip-browser-warning": "true" },
             withCredentials: true,
           }),
           axiosInstance.get("/api/surveys", {
-            headers: {
-              'Accept': 'application/json',
-              'ngrok-skip-browser-warning': 'true',
-            },
+            headers: { Accept: "application/json", "ngrok-skip-browser-warning": "true" },
             withCredentials: true,
-          })
+          }),
         ]);
 
-        setResponses(userResponse.data.responseData.responses || []);
-        setSurveys(surveysResponse.data);
+        // console.log("userResponse.data: ", userResponse.data);
+        // console.log("surveysResponse.data: ", surveysResponse.data);
 
+        setResponses(userResponse.data?.responseData?.participatedSurvey ?? []);
+        setSurveys(surveysResponse.data?.responseData ?? []);
       } catch (error) {
         console.error("Failed to fetch data:", error);
+        setResponses([]);
+        setSurveys([]);
       }
     };
 
     fetchData();
   }, []);
 
-  const surveyMap = new Map();
-  surveys.forEach((s) => surveyMap.set(s._id, s));
+  const surveyArray = Array.isArray(surveys) ? surveys : [];
+  const responseArray = Array.isArray(responses) ? responses : [];
 
-  const participatedSurveys = responses
-    .map((r) => surveyMap.get(r.surveyId))
+  const surveyMap = new Map(
+    surveyArray.map((s) => [String(s?.surveyId), s])
+  );
+
+  const participatedSurveys = responseArray
+    .map((r) => surveyMap.get(String(r?.surveyId)))
     .filter(Boolean);
 
   const countryGroups = {};
-  surveys.forEach((s) => {
-    if (!countryGroups[s.country]) {
-      countryGroups[s.country] = { total: 0, participated: 0 };
-    }
-    countryGroups[s.country].total += 1;
+  surveyArray.forEach((s) => {
+    const c = s?.country ?? "Unknown";
+    if (!countryGroups[c]) countryGroups[c] = { total: 0, participated: 0 };
+    countryGroups[c].total += 1;
   });
 
-  responses.forEach((r) => {
-    const s = surveyMap.get(r.surveyId);
-    if (s && countryGroups[s.country]) {
-      countryGroups[s.country].participated += 1;
-    }
+  responseArray.forEach((r) => {
+    const s = surveyMap.get(String(r?.surveyId));
+    if (s) countryGroups[s.country].participated += 1;
   });
 
-  const countryCharts = Object.entries(countryGroups).map(([country, stats]) => {
-    return {
-      country,
-      data: [
-        { name: "응답", value: stats.participated },
-        { name: "미응답", value: stats.total - stats.participated },
-      ],
-    };
-  });
+  const countryCharts = Object.entries(countryGroups).map(([country, stats]) => ({
+    country,
+    data: [
+      { name: "응답", value: stats.participated },
+      { name: "미응답", value: stats.total - stats.participated },
+    ],
+  }));
 
   return (
     <MypageLayout>
@@ -86,12 +83,7 @@ const SurveyParticipation = () => {
               <ChartBox key={index}>
                 <h4>{chart.country}</h4>
                 <PieChart width={200} height={200}>
-                  <Pie
-                    data={chart.data}
-                    dataKey="value"
-                    outerRadius={80}
-                    label
-                  >
+                  <Pie data={chart.data} dataKey="value" outerRadius={80} label>
                     {chart.data.map((_, i) => (
                       <Cell key={`cell-${i}`} fill={COLORS[i % COLORS.length]} />
                     ))}
@@ -109,17 +101,20 @@ const SurveyParticipation = () => {
               <p>아직 참여한 설문이 없습니다.</p>
             ) : (
               <SurveyList>
-                {participatedSurveys.map((s) => (
-                  <SurveyCard key={s._id}>
-                    <img src={s.imageUrl} alt={s.entityName} />
-                    <div>
-                      <strong>{`${s.country} > ${s.category} > ${s.entityName}`}</strong>
-                      <p>
-                        응답한 문항 수: {responses.find((r) => r.surveyId === s._id)?.answers.length || 0}
-                      </p>
-                    </div>
-                  </SurveyCard>
-                ))}
+                {participatedSurveys.map((s) => {
+                  const matched = responseArray.find((r) => String(r?.surveyId) === String(s?.surveyId));
+                  const answeredCount = matched?.answers?.length ?? matched?.answerCount ?? 0;
+
+                  return (
+                    <SurveyCard key={s.surveyId}>
+                      <img src={s.imageUrl} alt={s.title} />
+                      <div>
+                        <strong>{`${s.country} > ${s.category} > ${s.title}`}</strong>
+                        <p>응답한 문항 수: {answeredCount}</p>
+                      </div>
+                    </SurveyCard>
+                  );
+                })}
               </SurveyList>
             )}
           </ParticipatedSection>
@@ -131,61 +126,21 @@ const SurveyParticipation = () => {
 
 export default SurveyParticipation;
 
-const Wrapper = styled.div`
-  padding: 20px;
-`;
-
-const Container = styled.div`
-  max-width: 1100px;
-  margin: 0 auto;
-`;
-
+const Wrapper = styled.div`padding: 20px;`;
+const Container = styled.div`max-width: 1100px; margin: 0 auto;`;
 const ChartRow = styled.div`
-  display: flex;
-  justify-content: space-around;
-  flex-wrap: wrap;
-  gap: 40px;
-  margin-top: 20px;
-  margin-bottom: 60px;
+  display: flex; justify-content: space-around; flex-wrap: wrap;
+  gap: 40px; margin-top: 20px; margin-bottom: 60px;
 `;
-
-const ChartBox = styled.div`
-  text-align: center;
-`;
-
-const ParticipatedSection = styled.div`
-  margin-top: 60px;
-`;
-
+const ChartBox = styled.div`text-align: center;`;
+const ParticipatedSection = styled.div`margin-top: 60px;`;
 const SurveyList = styled.div`
-  margin-top: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
+  margin-top: 10px; display: flex; flex-direction: column; gap: 14px;
 `;
-
 const SurveyCard = styled.div`
-  display: flex;
-  gap: 14px;
-  align-items: center;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  padding: 12px;
-
-  img {
-    width: 60px;
-    height: 60px;
-    object-fit: cover;
-    border-radius: 6px;
-  }
-
-  strong {
-    font-size: 16px;
-  }
-
-  p {
-    margin: 4px 0 0;
-    font-size: 14px;
-    color: #555;
-  }
+  display: flex; gap: 14px; align-items: center; border: 1px solid #ddd;
+  border-radius: 10px; padding: 12px;
+  img { width: 60px; height: 60px; object-fit: cover; border-radius: 6px; }
+  strong { font-size: 16px; }
+  p { margin: 4px 0 0; font-size: 14px; color: #555; }
 `;
