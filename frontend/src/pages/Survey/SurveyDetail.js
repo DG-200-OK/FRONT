@@ -10,10 +10,18 @@ const SurveyDetail = () => {
 
   const handleStart = () => {
     const path = `${country} > ${category} > ${title}`;
+
+    // Create a shuffled copy of the captions array
+    const shuffledCaptions = [...captions];
+    for (let i = shuffledCaptions.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffledCaptions[i], shuffledCaptions[j]] = [shuffledCaptions[j], shuffledCaptions[i]];
+    }
+
     navigate(`/survey/${title}/start`, {
       state: {
         image: image_url,
-        captions: captions, 
+        captions: shuffledCaptions, 
         path,
         surveyId: Key,
         startIndex: startIndex || 0,

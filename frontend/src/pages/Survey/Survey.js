@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import SurveypageLayout from "@/layouts/SurveypageLayout";
@@ -13,7 +13,7 @@ const Survey = () => {
   const [surveys, setSurveys] = useState([]);
   const [selectedCountries, setSelectedCountries] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
-  const [sortOrder, setSortOrder] = useState("asc");
+  const [sortOrder, setSortOrder] = useState("random");
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 4;
@@ -61,13 +61,20 @@ const Survey = () => {
     return countryMatch && categoryMatch;
   });
 
-  const sorted = [...filtered].sort((a, b) => {
-    const titleA = a.title || "";
-    const titleB = b.title || "";
-    return sortOrder === "asc"
-      ? titleA.localeCompare(titleB)
-      : titleB.localeCompare(titleA);
-  });
+  const sorted = useMemo(() => {
+    let sortable = [...filtered];
+    if (sortOrder === "asc") {
+      sortable.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
+    } else if (sortOrder === "desc") {
+      sortable.sort((a, b) => (b.title || "").localeCompare(a.title || ""));
+    } else if (sortOrder === "random") {
+      for (let i = sortable.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [sortable[i], sortable[j]] = [sortable[j], sortable[i]];
+      }
+    }
+    return sortable;
+  }, [filtered, sortOrder]);
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -107,6 +114,7 @@ const Survey = () => {
           <strong>정렬:</strong>
           <button onClick={() => setSortOrder("asc")}>오름차순</button>
           <button onClick={() => setSortOrder("desc")}>내림차순</button>
+          <button onClick={() => setSortOrder("random")}>랜덤</button>
         </SortControls>
       </PathAndSortContainer>
 
