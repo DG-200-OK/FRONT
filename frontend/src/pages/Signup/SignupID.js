@@ -98,7 +98,7 @@ const ModalBackground = styled.div`
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(5px); 
+  backdrop-filter: blur(5px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -132,47 +132,50 @@ const SignupID = () => {
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [isError, setIsError] = useState(false);
-  const navigate = useNavigate();  
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-
     e.preventDefault();
 
-    const blob = await fetch(DefaultProfile).then(res => res.blob());
+    const blob = await fetch(DefaultProfile).then((res) => res.blob());
     const base64 = await new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onloadend = () => resolve(reader.result);
-    reader.onerror = reject;
-    reader.readAsDataURL(blob);
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
     });
-  
+
     try {
-      const response = await axiosInstance.post("/api/auth/signup", {
-        username: id,
-        password
-      }, {
-        headers: {
-          'Accept': 'application/json',
-          'ngrok-skip-browser-warning': 'true'
+      const response = await axiosInstance.post(
+        "/api/auth/signup",
+        {
+          username: id,
+          password,
         },
-        withCredentials: true,
-      });
+        {
+          headers: {
+            Accept: "application/json",
+            "ngrok-skip-browser-warning": "true",
+          },
+          withCredentials: true,
+        }
+      );
 
       console.log("회원가입 성공:", response.data);
 
       setModalMessage("🎉 회원가입 성공! 메인화면으로 이동합니다.");
       setIsError(false);
       setShowModal(true);
-    
     } catch (error) {
       console.error("회원가입 실패:", error);
-      const message = error.response?.data?.message || "회원가입 실패! 다른 아이디를 사용하세요";
+      const message =
+        "현재 회원가입 기능을 지원하지 않습니다.\n관리자에게 문의해주세요.";
       setModalMessage(message);
       setIsError(true);
       setShowModal(true);
     }
   };
-  
+
   const handleModalClose = () => {
     setShowModal(false);
     if (!isError) {
