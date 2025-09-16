@@ -131,35 +131,43 @@ const AdminDetailPage = () => {
     const fetchSurveyDetails = async () => {
       try {
         const response = await axiosInstance.get(`/api/surveys/${id}`, {
-          headers: {
-            'ngrok-skip-browser-warning': 'true'
-          }
+          headers: { "ngrok-skip-browser-warning": "true" },
+          withCredentials: true,
         });
-        const data = response.data;
 
-        const mockVotes = {
-          0: { 1: 5, 2: 3, 3: 2, 4: 1, 5: 0 },
-          1: { 1: 2, 2: 3, 3: 4, 4: 5, 5: 6 },
-          2: { 1: 0, 2: 1, 3: 2, 4: 3, 5: 4 },
-          3: { 1: 1, 2: 1, 3: 2, 4: 2, 5: 10 },
-          4: { 1: 3, 2: 2, 3: 1, 4: 1, 5: 0 },
+        const raw = response.data?.responseData ?? response.data ?? {};
+        const captions = Array.isArray(raw.captions) ? raw.captions : [];
+
+        const mockVotes = captions.reduce((acc, _, i) => {
+          acc[i] = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }; 
+          return acc;
+        }, {});
+
+        const normalized = {
+          surveyId: raw.surveyId ?? raw.id ?? Number(id),
+          title: raw.title ?? raw.entityName ?? "",
+          country: raw.country ?? "",
+          category: raw.category ?? "",
+          imageUrl: raw.imageUrl ?? "",
+          captions,
+          votes: raw.votes ?? mockVotes,
         };
 
-        setSurvey({ ...data, votes: mockVotes });
+        setSurvey(normalized);
       } catch (err) {
         console.error("설문 세부 정보 불러오기 실패:", err);
+        setSurvey(null);
       }
     };
 
     fetchSurveyDetails();
   }, [id]);
 
-  const formatChartData = (votesObj) => {
-    return [1, 2, 3, 4, 5].map((score) => ({
+  const formatChartData = (votesObj) =>
+    [1, 2, 3, 4, 5].map((score) => ({
       name: `${score}점`,
       value: votesObj?.[score] ?? 0,
     }));
-  };
 
   const exportData = (type) => {
     if (!survey) return;
@@ -167,40 +175,38 @@ const AdminDetailPage = () => {
     const exportObj = {
       country: survey.country,
       category: survey.category,
-      entityName: survey.entityName,
-      captions: survey.captions,
-      votes: survey.votes,
+      title: survey.title,
+      captions: survey.captions ?? [],
+      votes: survey.votes ?? {},
     };
 
     if (type === "json") {
-      const blob = new Blob([JSON.stringify(exportObj, null, 2)], {
-        type: "application/json",
-      });
+      const blob = new Blob([JSON.stringify(exportObj, null, 2)], { type: "application/json" });
       const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `survey_${id}.json`;
-      link.click();
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `survey_${survey.surveyId}.json`;
+      a.click();
     } else if (type === "csv") {
       let csv = "캡션,1점,2점,3점,4점,5점\n";
-      survey.captions.forEach((caption, i) => {
-        const votes = survey.votes?.[i] || {};
-        csv += `${caption},${votes[1] || 0},${votes[2] || 0},${votes[3] || 0},${votes[4] || 0},${votes[5] || 0}\n`;
+      (survey.captions ?? []).forEach((caption, i) => {
+        const v = survey.votes?.[i] ?? {};
+        csv += `${caption},${v[1] ?? 0},${v[2] ?? 0},${v[3] ?? 0},${v[4] ?? 0},${v[5] ?? 0}\n`;
       });
-      const blob = new Blob([csv], {
-        type: "text/csv",
-      });
+      const blob = new Blob([csv], { type: "text/csv" });
       const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `survey_${id}.csv`;
-      link.click();
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `survey_${survey.surveyId}.csv`;
+      a.click();
     }
 
     setShowDropdown(false);
   };
 
   if (!survey) return <p>설문 정보를 불러오는 중...</p>;
+
+  const captionsSafe = Array.isArray(survey.captions) ? survey.captions : [];
 
   return (
     <MypageLayout>
@@ -220,36 +226,41 @@ const AdminDetailPage = () => {
           </ExportWrapper>
         </TitleRow>
 
-        
-
         <DetailRow>
-          
           <ImageBlock>
             <Image src={survey.imageUrl} alt="entity" />
           </ImageBlock>
           <TextBlock>
-            <DetailTitle>{survey.entityName}</DetailTitle>
-            <DetailSubtitle>{survey.country} / {survey.category}</DetailSubtitle>
+            <DetailTitle>{survey.title}</DetailTitle>
+            <DetailSubtitle>
+              {survey.country} / {survey.category}
+            </DetailSubtitle>
             {survey.captions.map((cap, i) => (
-              <CaptionItem key={i}>- {cap}</CaptionItem>
+              <CaptionItem key={cap.captionId ?? i}>
+                - {cap.text}
+              </CaptionItem>
             ))}
           </TextBlock>
         </DetailRow>
+
         <ChartGrid>
-          {survey.captions.map((caption, idx) => (
-            <ChartWrapper key={idx}>
-              <h4>캡션 {idx + 1}</h4>
+          {survey.captions.map((cap, idx) => (
+            <ChartWrapper key={cap.captionId ?? idx}>
+              <h4>{cap.text}</h4>
               <ResponsiveContainer width={180} height={180}>
                 <PieChart>
                   <Pie
-                    data={formatChartData(survey.votes[idx])}
+                    data={formatChartData(survey.votes?.[idx] ?? {})}
                     dataKey="value"
                     nameKey="name"
                     outerRadius={70}
                     label
                   >
-                    {formatChartData(survey.votes[idx]).map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    {formatChartData(survey.votes?.[idx] ?? {}).map((_, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={COLORS[index % COLORS.length]}
+                      />
                     ))}
                   </Pie>
                   <Tooltip />
@@ -257,6 +268,7 @@ const AdminDetailPage = () => {
               </ResponsiveContainer>
             </ChartWrapper>
           ))}
+
         </ChartGrid>
       </Content>
     </MypageLayout>

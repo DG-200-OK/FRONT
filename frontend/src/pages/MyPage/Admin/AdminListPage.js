@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import MypageLayout from "@/layouts/MypageLayout";
 import axiosInstance from "@/axiosInstance";
 
@@ -130,7 +130,6 @@ const TitleWrapper = styled.div`
 `;
 
 const AdminListPage = () => {
-  const navigate = useNavigate();
   const [surveys, setSurveys] = useState([]);
   const [filteredSurveys, setFilteredSurveys] = useState([]);
   const [selectedCountry, setSelectedCountry] = useState("");
@@ -138,69 +137,58 @@ const AdminListPage = () => {
   const [selectedStatus, setSelectedStatus] = useState("");
 
   const countries = ["한국", "중국", "일본"];
-  const categories = ["architecture", "cuisine", "tool", "clothes", "game"];
+  const categories = ["Architecture", "Cuisine", "Tool", "Clothes", "Game"];
   const statuses = ["approved", "pending", "rejected"];
 
   useEffect(() => {
     const fetchSurveys = async () => {
       try {
-        const response = await axiosInstance.get("/api/surveys", {
+        const res = await axiosInstance.get("/api/surveys", {
           headers: {
-            'Accept': 'application/json',
-            'ngrok-skip-browser-warning': 'true'
+            Accept: "application/json",
+            "ngrok-skip-browser-warning": "true",
           },
+          withCredentials: true,
         });
-        setSurveys(response.data);
-        setFilteredSurveys(response.data);
+
+        const list = Array.isArray(res.data?.responseData)
+          ? res.data.responseData
+          : Array.isArray(res.data)
+          ? res.data
+          : [];
+
+        setSurveys(list);
+        setFilteredSurveys(list);
       } catch (err) {
-        console.error("❌ 설문 목록 불러오기 실패:", err);
+        console.error("설문 목록 불러오기 실패:", err);
+        setSurveys([]);
+        setFilteredSurveys([]);
       }
     };
 
     fetchSurveys();
   }, []);
 
-  const handleCountryChange = (e) => {
-    setSelectedCountry(e.target.value);
-  };
-
-  const handleCategoryChange = (e) => {
-    setSelectedCategory(e.target.value);
-  };
+  const handleCountryChange = (e) => setSelectedCountry(e.target.value);
+  const handleCategoryChange = (e) => setSelectedCategory(e.target.value);
 
   useEffect(() => {
-    let filtered = surveys;
+    const base = Array.isArray(surveys) ? surveys : [];
+
+    let filtered = base;
 
     if (selectedCountry) {
-      filtered = filtered.filter(
-        (survey) => survey.country === selectedCountry
-      );
+      filtered = filtered.filter((s) => (s?.country ?? "") === selectedCountry);
     }
 
     if (selectedCategory) {
       filtered = filtered.filter(
-        (survey) => survey.category === selectedCategory
+        (s) => (s?.category ?? "") === selectedCategory
       );
     }
 
-    setFilteredSurveys(filtered);
-  }, [selectedCountry, selectedCategory, surveys]);
-
-  useEffect(() => {
-    let filtered = surveys;
-
-    if (selectedCountry) {
-      filtered = filtered.filter(
-        (survey) => survey.country === selectedCountry
-      );
-    }
-    if (selectedCategory) {
-      filtered = filtered.filter(
-        (survey) => survey.category === selectedCategory
-      );
-    }
     if (selectedStatus) {
-      filtered = filtered.filter((survey) => survey.status === selectedStatus);
+      filtered = filtered.filter((s) => s?.status === selectedStatus);
     }
 
     setFilteredSurveys(filtered);
@@ -211,38 +199,28 @@ const AdminListPage = () => {
       <Content>
         <TitleWrapper>
           <SectionTitle>내 설문 목록</SectionTitle>
+
           <SelectWrapper>
             <div>
               <label htmlFor="country">나라 선택:</label>
-              <Select
-                id="country"
-                value={selectedCountry}
-                onChange={handleCountryChange}
-              >
+              <Select id="country" value={selectedCountry} onChange={handleCountryChange}>
                 <option value="">전체</option>
-                {countries.map((country) => (
-                  <option key={country} value={country}>
-                    {country}
-                  </option>
+                {countries.map((c) => (
+                  <option key={c} value={c}>{c}</option>
                 ))}
               </Select>
             </div>
 
             <div>
               <label htmlFor="category">카테고리 선택:</label>
-              <Select
-                id="category"
-                value={selectedCategory}
-                onChange={handleCategoryChange}
-              >
+              <Select id="category" value={selectedCategory} onChange={handleCategoryChange}>
                 <option value="">전체</option>
-                {categories.map((category) => (
-                  <option key={category} value={category}>
-                    {category}
-                  </option>
+                {categories.map((cat) => (
+                  <option key={cat} value={cat}>{cat}</option>
                 ))}
               </Select>
             </div>
+
             <div>
               <label htmlFor="status">승인 상태:</label>
               <Select
@@ -251,13 +229,9 @@ const AdminListPage = () => {
                 onChange={(e) => setSelectedStatus(e.target.value)}
               >
                 <option value="">전체</option>
-                {statuses.map((status) => (
-                  <option key={status} value={status}>
-                    {status === "approved"
-                      ? "승인됨"
-                      : status === "pending"
-                      ? "대기 중"
-                      : "거절됨"}
+                {statuses.map((st) => (
+                  <option key={st} value={st}>
+                    {st === "approved" ? "승인됨" : st === "pending" ? "대기 중" : "거절됨"}
                   </option>
                 ))}
               </Select>
@@ -265,27 +239,25 @@ const AdminListPage = () => {
           </SelectWrapper>
         </TitleWrapper>
 
-        {filteredSurveys.length === 0 ? (
+        {!Array.isArray(filteredSurveys) || filteredSurveys.length === 0 ? (
           <p>등록한 설문조사가 없습니다.</p>
         ) : (
           <SurveyGrid>
-            {filteredSurveys.map(
-              ({ _id, country, category, entityName, imageUrl }) => (
-                <SurveyCard key={_id}>
-                  <StyledLink to={`/mypage/survey-creation-detail/${_id}`}>
-                    <Image src={imageUrl} alt={category} />
-                    <CardInfo>
-                      <EntityName>{entityName}</EntityName>
-                      <MetaInfo>{`${country}, ${category}`}</MetaInfo>
-                    </CardInfo>
-                    <ResponseButton>
-                      <span>58명</span>
-                      <span>응답 보러가기</span>
-                    </ResponseButton>
-                  </StyledLink>
-                </SurveyCard>
-              )
-            )}
+            {filteredSurveys.map(({ surveyId, country, category, title, imageUrl }) => (
+              <SurveyCard key={surveyId}>
+                <StyledLink to={`/mypage/survey-creation-detail/${surveyId}`}>
+                  <Image src={imageUrl} alt={category} />
+                  <CardInfo>
+                    <EntityName>{title}</EntityName>
+                    <MetaInfo>{`${country}, ${category}`}</MetaInfo>
+                  </CardInfo>
+                  <ResponseButton>
+                    <span>58명</span>
+                    <span>응답 보러가기</span>
+                  </ResponseButton>
+                </StyledLink>
+              </SurveyCard>
+            ))}
           </SurveyGrid>
         )}
       </Content>
@@ -294,3 +266,4 @@ const AdminListPage = () => {
 };
 
 export default AdminListPage;
+
