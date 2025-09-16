@@ -22,7 +22,7 @@ const Content = styled.div`
 
 const SurveyGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(3, 1fr); 
+  grid-template-columns: repeat(3, 1fr);
   gap: 20px;
   margin-top: 20px;
 
@@ -143,7 +143,7 @@ const AdminListPage = () => {
   useEffect(() => {
     const fetchSurveys = async () => {
       try {
-        const res = await axiosInstance.get("/api/surveys", {
+        const res = await axiosInstance.get("/api/surveys/register", {
           headers: {
             Accept: "application/json",
             "ngrok-skip-browser-warning": "true",
@@ -203,20 +203,32 @@ const AdminListPage = () => {
           <SelectWrapper>
             <div>
               <label htmlFor="country">나라 선택:</label>
-              <Select id="country" value={selectedCountry} onChange={handleCountryChange}>
+              <Select
+                id="country"
+                value={selectedCountry}
+                onChange={handleCountryChange}
+              >
                 <option value="">전체</option>
                 {countries.map((c) => (
-                  <option key={c} value={c}>{c}</option>
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
                 ))}
               </Select>
             </div>
 
             <div>
               <label htmlFor="category">카테고리 선택:</label>
-              <Select id="category" value={selectedCategory} onChange={handleCategoryChange}>
+              <Select
+                id="category"
+                value={selectedCategory}
+                onChange={handleCategoryChange}
+              >
                 <option value="">전체</option>
                 {categories.map((cat) => (
-                  <option key={cat} value={cat}>{cat}</option>
+                  <option key={cat} value={cat}>
+                    {cat}
+                  </option>
                 ))}
               </Select>
             </div>
@@ -231,7 +243,11 @@ const AdminListPage = () => {
                 <option value="">전체</option>
                 {statuses.map((st) => (
                   <option key={st} value={st}>
-                    {st === "approved" ? "승인됨" : st === "pending" ? "대기 중" : "거절됨"}
+                    {st === "approved"
+                      ? "승인됨"
+                      : st === "pending"
+                      ? "대기 중"
+                      : "거절됨"}
                   </option>
                 ))}
               </Select>
@@ -243,21 +259,23 @@ const AdminListPage = () => {
           <p>등록한 설문조사가 없습니다.</p>
         ) : (
           <SurveyGrid>
-            {filteredSurveys.map(({ surveyId, country, category, title, imageUrl }) => (
-              <SurveyCard key={surveyId}>
-                <StyledLink to={`/mypage/survey-creation-detail/${surveyId}`}>
-                  <Image src={imageUrl} alt={category} />
-                  <CardInfo>
-                    <EntityName>{title}</EntityName>
-                    <MetaInfo>{`${country}, ${category}`}</MetaInfo>
-                  </CardInfo>
-                  <ResponseButton>
-                    <span>58명</span>
-                    <span>응답 보러가기</span>
-                  </ResponseButton>
-                </StyledLink>
-              </SurveyCard>
-            ))}
+            {filteredSurveys.map(
+              ({ surveyId, country, category, title, imageUrl }) => (
+                <SurveyCard key={surveyId}>
+                  <StyledLink to={`/mypage/survey-creation-detail/${surveyId}`}>
+                    <Image src={imageUrl} alt={category} />
+                    <CardInfo>
+                      <EntityName>{title}</EntityName>
+                      <MetaInfo>{`${country}, ${category}`}</MetaInfo>
+                    </CardInfo>
+                    <ResponseButton>
+                      <span>58명</span>
+                      <span>응답 보러가기</span>
+                    </ResponseButton>
+                  </StyledLink>
+                </SurveyCard>
+              )
+            )}
           </SurveyGrid>
         )}
       </Content>
@@ -266,4 +284,3 @@ const AdminListPage = () => {
 };
 
 export default AdminListPage;
-
