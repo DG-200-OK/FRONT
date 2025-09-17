@@ -13,87 +13,68 @@ const Survey = () => {
   const [surveys, setSurveys] = useState([]);
   const [selectedCountries, setSelectedCountries] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
-  const [sortOrder, setSortOrder] = useState("random");
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const [randomizedSurveys, setRandomizedSurveys] = useState([]);
   const itemsPerPage = 4;
   const pageNumbersToShow = 5;
 
   useEffect(() => {
-    const userId = localStorage.getItem('user_id');
-    if (!userId) {
-      navigate("/login");
-      return;
-    }
-
-    const fetchSurveys = async () => {
-      setIsLoading(true);
-      try {
-        const response = await axiosInstance.get("/api/surveys", {
-          headers: {
-            'Accept': 'application/json',
-            'ngrok-skip-browser-warning': 'true'
-          },
-          withCredentials: true,
-        });
-        setSurveys(
-          Array.isArray(response.data)
-            ? response.data
-            : (response.data?.responseData ?? [])
-        );
-      } catch (error) {
-        console.error("Failed to fetch surveys:", error);
-      } finally {
-        setIsLoading(false);
+      const userId = localStorage.getItem("user_id");
+      if (!userId) {
+        navigate("/login");
+        return;
       }
-    };
 
-    fetchSurveys();
-  }, [navigate]);
+      const fetchSurveys = async () => {
+        setIsLoading(true);
+        try {
+          const res = await axiosInstance.get("/api/surveys", {
+            headers: {
+              Accept: "application/json",
+              "ngrok-skip-browser-warning": "true",
+            },
+            withCredentials: true,
+          });
 
-  const filtered = (Array.isArray(surveys) ? surveys : []).filter((item) => {
-    const countryMatch =
-      selectedCountries.length === 0 || selectedCountries.includes(item.country);
+          const list = Array.isArray(res.data)
+            ? res.data
+            : res.data?.responseData ?? [];
+          setSurveys(list);
+        } catch (e) {
+          console.error("Failed to fetch surveys:", e);
+        } finally {
+          setIsLoading(false);
+        }
+      };
 
-    const categoryMatch =
-      selectedCategories.length === 0 || selectedCategories.includes(item.category);
+      fetchSurveys();
+    }, [navigate]);
 
-    return countryMatch && categoryMatch;
-  });
+  const filtered = useMemo(() => {
+    const src = Array.isArray(surveys) ? surveys : [];
+    return src.filter((item) => {
+      const countryOk =
+        selectedCountries.length === 0 ||
+        selectedCountries.includes(item.country);
+      const categoryOk =
+        selectedCategories.length === 0 ||
+        selectedCategories.includes(item.category);
+      return countryOk && categoryOk;
+    });
+  }, [surveys, selectedCountries, selectedCategories]);
 
-  const sorted = useMemo(() => {
-    let sortable = [...filtered];
-    if (sortOrder === "asc") {
-      sortable.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
-    } else if (sortOrder === "desc") {
-      sortable.sort((a, b) => (b.title || "").localeCompare(a.title || ""));
-    } else if (sortOrder === "random") {
-      // 랜덤 정렬이 선택되었을 때, 기존 랜덤 순서가 있으면 사용
-      if (randomizedSurveys.length === filtered.length &&
-          randomizedSurveys.every(item => filtered.find(f => f.Key === item.Key))) {
-        return randomizedSurveys;
-      }
-      // 새로운 랜덤 정렬 생성
-      for (let i = sortable.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [sortable[i], sortable[j]] = [sortable[j], sortable[i]];
-      }
-      setRandomizedSurveys([...sortable]);
-    }
-    return sortable;
-  }, [filtered, sortOrder, randomizedSurveys]);
-
+  const totalPages = Math.ceil(filtered.length / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = sorted.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(sorted.length / itemsPerPage);
+  const currentItems = filtered.slice(indexOfFirstItem, indexOfLastItem);
 
   const pageGroup = Math.ceil(currentPage / pageNumbersToShow);
-  let startPage = (pageGroup - 1) * pageNumbersToShow + 1;
-  let endPage = Math.min(startPage + pageNumbersToShow - 1, totalPages);
-
-  const pageNumbers = Array.from({ length: (endPage - startPage) + 1 }, (_, i) => startPage + i);
+  const startPage = (pageGroup - 1) * pageNumbersToShow + 1;
+  const endPage = Math.min(startPage + pageNumbersToShow - 1, totalPages);
+  const pageNumbers = Array.from(
+    { length: endPage - startPage + 1 },
+    (_, i) => startPage + i
+  );
 
   return (
     <SurveypageLayout
@@ -103,7 +84,6 @@ const Survey = () => {
           prev.includes(country) ? prev.filter((c) => c !== country) : [...prev, country]
         );
         setCurrentPage(1);
-        setRandomizedSurveys([]);
       }}
       selectedCategories={selectedCategories}
       handleCategoryChange={(category) => {
@@ -111,7 +91,6 @@ const Survey = () => {
           prev.includes(category) ? prev.filter((c) => c !== category) : [...prev, category]
         );
         setCurrentPage(1);
-        setRandomizedSurveys([]);
       }}
     >
       <PathAndSortContainer>
@@ -120,21 +99,6 @@ const Survey = () => {
           {selectedCountries.length > 0 && ` > ${selectedCountries.join(", ")}`}
           {selectedCategories.length > 0 && ` > ${selectedCategories.join(", ")}`}
         </CategoryPath>
-        <SortControls>
-          <strong>정렬:</strong>
-          <button onClick={() => {
-            setSortOrder("asc");
-            setRandomizedSurveys([]);
-          }}>오름차순</button>
-          <button onClick={() => {
-            setSortOrder("desc");
-            setRandomizedSurveys([]);
-          }}>내림차순</button>
-          <button onClick={() => {
-            setSortOrder("random");
-            setRandomizedSurveys([]);
-          }}>랜덤</button>
-        </SortControls>
       </PathAndSortContainer>
 
       <SurveyContainer>
