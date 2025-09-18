@@ -1,6 +1,5 @@
 import React from "react";
 import CommonHeader from "@/components/CommonHeader";
-import Sidebar from "./Sidebar";
 import MainContent from "./MainContent";
 import styled from "styled-components";
 
@@ -11,9 +10,6 @@ const PageWrapper = styled.div`
 `;
 
 const ContentWrapper = styled.div`
-  display: grid;
-  grid-template-columns: 240px 1fr;
-  gap: 24px;
   padding: 24px;
   max-width: 1400px;
   width: 100%;
@@ -27,7 +23,6 @@ function ChartPage() {
       <CommonHeader />
       <PageWrapper>
         <ContentWrapper>
-          <Sidebar />
           <MainContent />
         </ContentWrapper>
       </PageWrapper>
