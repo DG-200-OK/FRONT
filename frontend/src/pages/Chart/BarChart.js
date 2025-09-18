@@ -4,23 +4,25 @@ import "./BarChart.css";
 // 차트의 최대값 (Y축)
 const MAX_VALUE = 5;
 
-function BarChart({ data }) {
-  const { labels, people, agent } = data;
+function BarChart({ title, theme, data }) {
+  const { labels, human, ai } = data;
 
   // 값(0~5)을 퍼센트 높이(0~100%)로 변환하는 헬퍼 함수
   const getBarHeight = (value) => (value / MAX_VALUE) * 100 + "%";
 
   return (
     <div className="chart-container">
+      <h5 className="chart-title">{title}</h5>
+
       {/* 차트 상단 범례 */}
       <div className="chart-legend">
         <div className="legend-item">
-          <span className="legend-dot people"></span>
-          people
+          <span className={`legend-dot human ${theme}`}></span>
+          사람 평가
         </div>
         <div className="legend-item">
-          <span className="legend-dot agent"></span>
-          agent
+          <span className={`legend-dot ai ${theme}`}></span>
+          AI 평가
         </div>
       </div>
 
@@ -28,31 +30,41 @@ function BarChart({ data }) {
       <div className="chart-body">
         {/* Y축 레이블 */}
         <div className="y-axis">
-          <span>{MAX_VALUE}</span>
-          <span>{Math.round(MAX_VALUE * 0.8)}</span>
-          <span>{Math.round(MAX_VALUE * 0.6)}</span>
-          <span>{Math.round(MAX_VALUE * 0.4)}</span>
-          <span>{Math.round(MAX_VALUE * 0.2)}</span>
-          <span>0</span>
+          <span>5</span>
+          <span>4</span>
+          <span>3</span>
+          <span>2</span>
+          <span>1</span>
         </div>
 
         {/* 바 그룹 */}
-        <div className="chart-bars">
-          {labels.map((label, index) => (
-            <div className="bar-group" key={label}>
-              <div className="bars">
-                <div
-                  className="bar people"
-                  style={{ height: getBarHeight(people[index]) }}
-                ></div>
-                <div
-                  className="bar agent"
-                  style={{ height: getBarHeight(agent[index]) }}
-                ></div>
+        <div className="chart-bars-area">
+          {/* Y축 가로 점선 */}
+          <div className="y-grid-lines">
+            <div className="grid-line"></div>
+            <div className="grid-line"></div>
+            <div className="grid-line"></div>
+            <div className="grid-line"></div>
+          </div>
+
+          {/* 실제 바 */}
+          <div className="chart-bars">
+            {labels.map((label, index) => (
+              <div className="bar-group" key={label}>
+                <div className="bars">
+                  <div
+                    className={`bar human ${theme}`}
+                    style={{ height: getBarHeight(human[index]) }}
+                  ></div>
+                  <div
+                    className={`bar ai ${theme}`}
+                    style={{ height: getBarHeight(ai[index]) }}
+                  ></div>
+                </div>
+                <span className="bar-label">{label}</span>
               </div>
-              <span className="bar-label">{label}</span>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </div>

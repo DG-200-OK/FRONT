@@ -6,7 +6,7 @@ import styled from "styled-components";
 
 const PageWrapper = styled.div`
   background-color: #f8f9fa;
-  padding-top: 60px; 
+  padding-top: 60px;
   min-height: 100vh;
 `;
 

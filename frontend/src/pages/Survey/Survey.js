@@ -15,66 +15,59 @@ const Survey = () => {
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 4;
+  const [totalPages, setTotalPages] = useState(0);
   const pageNumbersToShow = 5;
 
   useEffect(() => {
-      const userId = localStorage.getItem("user_id");
-      if (!userId) {
-        navigate("/login");
-        return;
-      }
+    const userId = localStorage.getItem("user_id");
+    if (!userId) {
+      navigate("/login");
+      return;
+    }
 
-      const fetchSurveys = async () => {
-        setIsLoading(true);
-        try {
-          const res = await axiosInstance.get("/api/surveys", {
-            headers: {
-              Accept: "application/json",
-              "ngrok-skip-browser-warning": "true",
-            },
-            withCredentials: true,
-          });
+    const fetchSurveys = async () => {
+      setIsLoading(true);
+      try {
+        const res = await axiosInstance.get("/api/surveys", {
+          headers: {
+            Accept: "application/json",
+            "ngrok-skip-browser-warning": "true",
+            page: currentPage,
+          },
+          withCredentials: true,
+          params: {
+            countries: selectedCountries.join(','),
+            categories: selectedCategories.join(',')
+          }
+        });
 
-          const list = Array.isArray(res.data)
-            ? res.data
-            : res.data?.responseData ?? [];
-          setSurveys(list);
-        } catch (e) {
-          console.error("Failed to fetch surveys:", e);
-        } finally {
-          setIsLoading(false);
+        const responseData = res.data?.responseData;
+        if (responseData) {
+          setSurveys(responseData.surveys || []);
+          setTotalPages(responseData.totalPages || 0);
+        } else {
+          setSurveys([]);
+          setTotalPages(0);
         }
-      };
+      } catch (e) {
+        console.error("Failed to fetch surveys:", e);
+        setSurveys([]);
+        setTotalPages(0);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-      fetchSurveys();
-    }, [navigate]);
-
-  const filtered = useMemo(() => {
-    const src = Array.isArray(surveys) ? surveys : [];
-    return src.filter((item) => {
-      const countryOk =
-        selectedCountries.length === 0 ||
-        selectedCountries.includes(item.country);
-      const categoryOk =
-        selectedCategories.length === 0 ||
-        selectedCategories.includes(item.category);
-      return countryOk && categoryOk;
-    });
-  }, [surveys, selectedCountries, selectedCategories]);
-
-  const totalPages = Math.ceil(filtered.length / itemsPerPage);
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filtered.slice(indexOfFirstItem, indexOfLastItem);
+    fetchSurveys();
+  }, [navigate, currentPage, selectedCountries, selectedCategories]);
 
   const pageGroup = Math.ceil(currentPage / pageNumbersToShow);
   const startPage = (pageGroup - 1) * pageNumbersToShow + 1;
   const endPage = Math.min(startPage + pageNumbersToShow - 1, totalPages);
-  const pageNumbers = Array.from(
+  const pageNumbers = totalPages > 0 ? Array.from(
     { length: endPage - startPage + 1 },
     (_, i) => startPage + i
-  );
+  ) : [];
 
   return (
     <SurveypageLayout
@@ -110,14 +103,14 @@ const Survey = () => {
             <SurveyItemSkeleton />
           </>
         ) : (
-          currentItems.map((item) => {
+          surveys.map((item) => {
             const total = item.captions.length || 5;
             const answered = Math.round((item.progress || 0) * total);
             const percent = Math.round((item.progress || 0) * 100);
 
             return (
               <SurveyItem
-                key={item.Key} 
+                key={item.surveyId} 
                 ref={(el) => (surveyRefs.current[item.title] = el)}
                 onClick={() =>
                   navigate(`/survey/${item.title}`, {
@@ -127,7 +120,7 @@ const Survey = () => {
                       country: item.country,
                       category: item.category,
                       title: item.title,
-                      Key: item.Key,
+                      Key: item.surveyId,
                       startIndex: answered,
                     },
                   })

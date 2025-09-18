@@ -1,0 +1,18 @@
+.evaluation-row {
+  display: flex;
+  background-color: #ffffff;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  padding: 20px;
+  gap: 20px;
+  align-items: flex-start; /* 차트와 이미지의 상단을 맞춤 */
+}
+
+.row-image {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 6px;
+  flex-shrink: 0; /* 창이 줄어들 때 이미지가 찌그러지지 않도록 함 */
+}
