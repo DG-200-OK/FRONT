@@ -168,6 +168,22 @@ class Login extends Component {
     }
   };
 
+  // Todo: remove, 개발코드
+  goAdmin = async (e) => {
+    e.preventDefault();
+    alert("개발: 관리자 로그인");
+    this.props.navigate("/administrator");
+    localStorage.setItem('user_id', "admin");
+  };
+
+  // Todo: remove, 개발코드
+  goUser = async (e) => {
+    e.preventDefault();
+    alert("개발: 유저 로그인");
+    this.props.navigate("/mainpage");
+    localStorage.setItem('user_id', "user");
+  };
+
   render() {
     return (
       <Container>
@@ -204,6 +220,12 @@ class Login extends Component {
         <SignupText>
           계정이 없으신가요? <Link to="/signup">계정 만들기</Link>
         </SignupText>
+
+        {/* Todo: remove, 개발 코드 */}
+        <div style={{ display: "flex", gap: "8px" }}>
+          <Button type="submit" style={{ width: "9rem" }} onClick={this.goAdmin}>관리자 로그인</Button>
+          <Button type="submit" style={{ width: "9rem" }} onClick={this.goUser}>유저 로그인</Button>
+        </div>
       </Container>
     );
   }
