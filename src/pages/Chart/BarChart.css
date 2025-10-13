@@ -1,0 +1,153 @@
+.chart-container {
+  flex: 1; /* 행의 남은 공간을 1/n로 나눠가짐 */
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 16px;
+  background: #fdfdfd;
+  min-width: 0; /* flex 아이템이 줄어들 수 있도록 함 */
+}
+
+.chart-title {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0 0 12px 0;
+  color: #333;
+}
+
+/* ✅ 수정된 부분 */
+.chart-legend {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px; /* 간격 줄임 */
+  margin-bottom: 8px;
+  font-size: 11px; /* ✅ 글씨 더 작게 */
+  color: #555;
+  flex-wrap: nowrap; /* ✅ 줄바꿈 방지 */
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  white-space: nowrap; /* ✅ 한 줄 유지 */
+  font-size: 11px; /* ✅ 크기 통일 */
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.chart-body {
+  display: flex;
+  flex: 1;
+}
+
+.y-axis {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  font-size: 10px;
+  color: #888;
+  padding-right: 4px;
+  text-align: right;
+  height: 120px; /* 차트 높이 고정 */
+}
+
+.chart-bars-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid #e0e0e0;
+  padding-left: 8px;
+  position: relative; /* 그리드 라인 때문 */
+  border-bottom: 1px solid #e0e0e0; /* '0' 라인 추가 */
+}
+
+.y-grid-lines {
+  position: absolute;
+  top: 0;
+  left: 8px; /* y-axis와의 간격 */
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+}
+
+.grid-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-top: 1px dashed #e0e0e0;
+}
+
+.chart-bars {
+  flex: 1;
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+  height: 120px; /* Y축과 동일 */
+  position: relative;
+  z-index: 1;
+}
+
+.bar-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 18%; /* 항목 개수에 맞춰 조정 */
+}
+
+.bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 120px; /* 고정 높이 */
+}
+
+.bar {
+  width: 10px;
+  border-radius: 3px 3px 0 0;
+  transition: height 0.3s ease-out;
+}
+
+.bar-label {
+  font-size: 11px;
+  color: #666;
+  margin-top: 2px;
+}
+
+/* --- 테마별 색상 정의 --- */
+
+/* 1. Cultural (연두/진녹색) */
+.legend-dot.human.cultural,
+.bar.human.cultural {
+  background-color: #b2c274;
+}
+.legend-dot.ai.cultural,
+.bar.ai.cultural {
+  background-color: #6f803c;
+}
+
+/* 2. Visual (연청록/진청록) */
+.legend-dot.human.visual,
+.bar.human.visual {
+  background-color: #a3d8d6;
+}
+.legend-dot.ai.visual,
+.bar.ai.visual {
+  background-color: #4f8f8c;
+}
+
+/* 3. Hallucination (연분홍/진분홍) */
+.legend-dot.human.hallucination,
+.bar.human.hallucination {
+  background-color: #f0b5c8;
+}
+.legend-dot.ai.hallucination,
+.bar.ai.hallucination {
+  background-color: #d987a2;
+}

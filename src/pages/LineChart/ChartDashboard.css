@@ -1,0 +1,14 @@
+.chart-dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.description-box {
+  background-color: #e9ecef;
+  color: #495057;
+  padding: 20px;
+  border-radius: 8px;
+  font-size: 16px;
+  line-height: 1.6;
+}
