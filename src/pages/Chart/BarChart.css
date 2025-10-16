@@ -19,8 +19,9 @@
 /* ✅ 수정된 부분 */
 .chart-legend {
   display: flex;
-  justify-content: flex-end;
-  gap: 8px; /* 간격 줄임 */
+  justify-content: center;
+  gap: 45px; /* 간격 줄임 */
+  margin-top: 8px;
   margin-bottom: 8px;
   font-size: 11px; /* ✅ 글씨 더 작게 */
   color: #555;

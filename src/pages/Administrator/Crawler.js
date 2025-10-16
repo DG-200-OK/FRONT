@@ -90,19 +90,42 @@ const ModalBox = styled.div`
 `;
 
 const ProgressCircle = styled.div`
+  position: relative;
   margin: 0 auto 20px;
   width: 120px;
   height: 120px;
   border-radius: 50%;
-  border: 10px solid #eaeaea;
-  border-top-color: #4a82d9;
+  background: conic-gradient(
+    #4a82d9 ${({ progress }) => progress * 3.6}deg,
+    #eaeaea ${({ progress }) => progress * 3.6}deg
+  );
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 22px;
-  font-weight: bold;
-  color: #4a82d9;
+  transition: background 0.3s ease;
+  z-index: 0;
+
+  /* 안쪽 흰색 원 (도넛 모양 만들기) */
+  &::after {
+    content: "";
+    position: absolute;
+    width: 85px;
+    height: 85px;
+    background: white;
+    border-radius: 50%;
+    z-index: 0; /* 숫자보다 아래로 */
+  }
+
+  /* 가운데 % 숫자 */
+  span {
+    position: absolute;
+    font-size: 22px;
+    font-weight: bold;
+    color: #4a82d9;
+    z-index: 1; /* 흰색 원보다 위로 */
+  }
 `;
+
 
 const ModalButtons = styled.div`
   display: flex;
@@ -212,7 +235,7 @@ const Crawler = () => {
       {isRunning && (
         <ModalOverlay>
           <ModalBox>
-            <ProgressCircle>{progress}%</ProgressCircle>
+            <ProgressCircle progress={progress}><span>{progress}%</span></ProgressCircle>
             <h3>진행중</h3>
             <p>소요된 시간: {Math.floor(progress / 10)}초 · 평균속도: {progress * 2}KB/s</p>
             <ModalButtons>

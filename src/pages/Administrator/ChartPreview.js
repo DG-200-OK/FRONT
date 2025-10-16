@@ -5,15 +5,16 @@ import "../Chart/BarChart.css"; // ✅ 스타일 적용
 
 // 🔹 임시 데이터 (나중에 API 연결 가능)
 const sampleData = {
-  labels: ["A", "B", "C"],
+  // labels: ["A", "B", "C"],
+  labels: ["A", "C"],
   human: [60, 80, 40],
   ai: [55, 75, 35],
 };
 
-const ChartPreview = ({ title, apiEndpoint }) => {
+const ChartPreview = ({ kor_title, title, apiEndpoint }) => {
   return (
     <ChartBox>
-      <ChartTitle>{title}</ChartTitle>
+      <ChartTitle>{kor_title}</ChartTitle>
 
       {/* ✅ 실제 차트 삽입 */}
       <BarChart title={title} theme="architecture" data={sampleData} />

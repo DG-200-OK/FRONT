@@ -51,9 +51,11 @@ const Administrator = () => {
               <CategoryCard>
                 <CategoryTitle>{cat}</CategoryTitle>
                 <ChartsRow>
-                  <ChartPreview title="의미 일치성" apiEndpoint={`/api/chart/${cat}/meaning`} />
-                  <ChartPreview title="표현 정확성" apiEndpoint={`/api/chart/${cat}/accuracy`} />
-                  <ChartPreview title="사실 명확성" apiEndpoint={`/api/chart/${cat}/clarity`} />
+                  {/* 의미 일치성 -> Score A: 깊이 풍부함, hys */}
+                  <ChartPreview title="Score A" kor_title = "깊이의 풍부함" apiEndpoint={`/api/chart/${cat}/meaning`} />
+                  {/* <ChartPreview title="표현 정확성" apiEndpoint={`/api/chart/${cat}/accuracy`} /> */}
+                  {/* 사실 명확성 -> Score C: 사실적 충실도 */}
+                  <ChartPreview title="Score C" kor_title = "사실적 충실도" apiEndpoint={`/api/chart/${cat}/clarity`} />
                 </ChartsRow>
               </CategoryCard>
             </div>
@@ -184,7 +186,7 @@ const ArrowBtn = styled.button`
 /* ---------- 하단 테이블 ---------- */
 const TableSection = styled.div`
   width: 100%;
-  max-width: 1000px;
+  max-width: 1133px;
   margin: 0 auto;
   background: #fff;
   padding: 20px;
