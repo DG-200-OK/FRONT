@@ -22,7 +22,14 @@ const HeaderContainer = styled.header`
 
 const NavButtons = styled.nav`
   display: flex;
+  flex-wrap: nowrap; /* ✅ 버튼 줄바꿈 방지 */
   gap: 80px;
+  overflow-x: auto; /* ✅ 공간 부족 시 스크롤 */
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 const NavButton = styled(NavLink)`
@@ -36,6 +43,8 @@ const NavButton = styled(NavLink)`
   transition: all 0.3s ease;
   text-align: center;
   position: relative;
+  white-space: nowrap;
+  min-width: fit-content;
 
   &:hover {
     color: #4a82d9;
@@ -119,10 +128,10 @@ const LoginWrapper = styled.div`
 const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
+
   const isRanking = location.pathname.startsWith("/ranking");
   const isMypage = location.pathname.startsWith("/mypage");
   const isDataDownload = location.pathname.startsWith("/data-download");
-
   const isLoggedIn = !!localStorage.getItem("user_id");
 
   const handleLogout = () => {
@@ -139,19 +148,24 @@ const Header = () => {
       </LogoWrapper>
 
       <NavButtons>
-        <NavButton to="/mainpage">홈</NavButton>
+        <NavButton to="/main">홈</NavButton>
         <NavButton to="/survey">데이터 평가</NavButton>
-        <NavButton to="/chart" className={isRanking ? "active" : undefined}>
+        <NavButton
+          to="/chart"
+          className={isRanking ? "active" : undefined}
+        >
           차트 조회
         </NavButton>
-        {/* ✅ 새로 추가 */}
         <NavButton
           to="/data-download"
           className={isDataDownload ? "active" : undefined}
         >
           데이터 다운로드
         </NavButton>
-        <NavButton to="/mypage" className={isMypage ? "active" : undefined}>
+        <NavButton
+          to="/mypage"
+          className={isMypage ? "active" : undefined}
+        >
           마이 페이지
         </NavButton>
       </NavButtons>

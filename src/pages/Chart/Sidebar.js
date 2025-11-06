@@ -5,7 +5,6 @@ const categories = [
   { name: "Architecture", displayName: "건축", color: "architecture" },
   { name: "Clothing", displayName: "의류", color: "clothing" },
   { name: "Cuisine", displayName: "요리", color: "cuisine" },
-  { name: "Game", displayName: "게임", color: "game" },
   { name: "Tool", displayName: "도구", color: "tool" }
 ];
 

@@ -77,7 +77,7 @@ const Header = () => {
   return (
     <HeaderContainer>
       {/* 왼쪽 로고 */}
-      <LogoWrapper to="/mainpage">
+      <LogoWrapper to="/main">
         <LogoImageStyled src={LogoImage} alt="로고" />
       </LogoWrapper>
 

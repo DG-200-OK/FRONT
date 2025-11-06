@@ -7,7 +7,7 @@ import "slick-carousel/slick/slick-theme.css";
 import AdministratorLayout from "@/layouts/AdministratorLayout";
 import ChartPreview from "./ChartPreview";
 
-const categories = ["architecture", "clothing", "cuisine", "game", "tool"];
+const categories = ["architecture", "clothing", "cuisine", "tool"];
 
 // 🔹 커스텀 화살표
 const Arrow = ({ className, style, onClick, dir }) => (
@@ -35,8 +35,14 @@ const sliderSettings = {
   prevArrow: <Arrow dir="prev" />,
   nextArrow: <Arrow dir="next" />,
   responsive: [
-    { breakpoint: 1024, settings: { slidesToShow: 2, slidesToScroll: 2 } },
-    { breakpoint: 820, settings: { slidesToShow: 1, slidesToScroll: 1 } },
+    {
+      breakpoint: 1024,
+      settings: { slidesToShow: 2, slidesToScroll: 2 },
+    },
+    {
+      breakpoint: 820,
+      settings: { slidesToShow: 1, slidesToScroll: 1 },
+    },
   ],
 };
 
@@ -51,11 +57,16 @@ const Administrator = () => {
               <CategoryCard>
                 <CategoryTitle>{cat}</CategoryTitle>
                 <ChartsRow>
-                  {/* 의미 일치성 -> Score A: 깊이 풍부함, hys */}
-                  <ChartPreview title="Score A" kor_title = "깊이의 풍부함" apiEndpoint={`/api/chart/${cat}/meaning`} />
-                  {/* <ChartPreview title="표현 정확성" apiEndpoint={`/api/chart/${cat}/accuracy`} /> */}
-                  {/* 사실 명확성 -> Score C: 사실적 충실도 */}
-                  <ChartPreview title="Score C" kor_title = "사실적 충실도" apiEndpoint={`/api/chart/${cat}/clarity`} />
+                  <ChartPreview
+                    title="Score A"
+                    kor_title="깊이의 풍부함"
+                    apiEndpoint={`/api/chart/${cat}/meaning`}
+                  />
+                  <ChartPreview
+                    title="Score C"
+                    kor_title="사실적 충실도"
+                    apiEndpoint={`/api/chart/${cat}/clarity`}
+                  />
                 </ChartsRow>
               </CategoryCard>
             </div>
@@ -71,28 +82,29 @@ const Administrator = () => {
             <tr>
               <th>이미지</th>
               <th>데이터명</th>
-              <th>데이터 일치율</th>
-              <th>웹크롤러 성공여부</th>
+              <th>Score A 일치율</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td><ImageBox>이미지</ImageBox></td>
+              <td>
+                <ImageBox>이미지</ImageBox>
+              </td>
               <td>
                 <strong>불고기</strong>
                 <SubText>국가: 한국 / 분류: cuisine</SubText>
               </td>
               <td>80%</td>
-              <td><SuccessTag>성공</SuccessTag></td>
             </tr>
             <tr>
-              <td><ImageBox>이미지</ImageBox></td>
+              <td>
+                <ImageBox>이미지</ImageBox>
+              </td>
               <td>
                 <strong>김치</strong>
                 <SubText>국가: 한국 / 분류: cuisine</SubText>
               </td>
               <td>45%</td>
-              <td><FailTag>실패</FailTag></td>
             </tr>
           </tbody>
         </Table>
@@ -104,39 +116,32 @@ const Administrator = () => {
 export default Administrator;
 
 /* ------------------- 스타일 ------------------- */
-
 const TopCarousel = styled.div`
   width: 100%;
   max-width: 1200px;
   margin: 0 auto 32px;
   position: relative;
-  overflow: hidden; 
+  overflow: hidden;
   box-sizing: border-box;
 `;
 
 const StyledSlider = styled(Slider)`
   width: 100%;
-
   .slick-list {
     overflow: hidden;
   }
-
   .slick-track {
     display: flex;
   }
-
   .slick-slide > div {
     padding: 0 12px;
     box-sizing: border-box;
   }
-
-  /* 🔽 slick 기본 화살표(동그라미) 숨기기 */
   .slick-prev,
   .slick-next {
     display: none !important;
   }
 `;
-
 
 const CategoryCard = styled.div`
   background: #fff;
@@ -189,9 +194,10 @@ const TableSection = styled.div`
   max-width: 1133px;
   margin: 0 auto;
   background: #fff;
-  padding: 20px;
+  padding: 20px 24px; /* ✅ 좌우 여백 추가 */
   border-radius: 12px;
   border: 1px solid #ddd;
+  box-sizing: border-box; /* ✅ 전체 너비에 padding 포함 */
 `;
 
 const TableTitle = styled.h3`
@@ -203,6 +209,7 @@ const Table = styled.table`
   width: 100%;
   border-collapse: collapse;
   text-align: center;
+  table-layout: fixed; /* ✅ 셀 비율 균등하게 */
 
   th,
   td {
@@ -210,12 +217,19 @@ const Table = styled.table`
     vertical-align: middle;
     padding: 12px 10px;
     border-bottom: 1px solid #eee;
+    word-wrap: break-word;
   }
 
   th {
     background: #f3f3f3;
     font-weight: 600;
     border-bottom: 1px solid #ddd;
+  }
+
+  /* ✅ 마지막 열 여백 보정 */
+  tr > th:last-child,
+  tr > td:last-child {
+    padding-right: 20px;
   }
 `;
 
@@ -236,20 +250,4 @@ const ImageBox = styled.div`
 const SubText = styled.div`
   font-size: 13px;
   color: #777;
-`;
-
-const SuccessTag = styled.span`
-  padding: 4px 10px;
-  border-radius: 6px;
-  background-color: #4caf50;
-  color: #fff;
-  font-size: 13px;
-`;
-
-const FailTag = styled.span`
-  padding: 4px 10px;
-  border-radius: 6px;
-  background-color: #f44336;
-  color: #fff;
-  font-size: 13px;
 `;

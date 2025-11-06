@@ -44,7 +44,7 @@ const SelectButton = styled.button`
   }
 `;
 
-const categories = ["Architecture", "Clothing", "Cuisine", "Game", "Tool"];
+const categories = ["Architecture", "Clothing", "Cuisine", "Tool"];
 
 const SurveypageSidebar = ({
   selectedCountries,

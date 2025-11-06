@@ -179,7 +179,7 @@ const Crawler = () => {
           <FormGroup>
             <Label>카테고리</Label>
             <RadioGroup>
-              {["architecture", "clothing", "cuisine", "game", "tool"].map((cat) => (
+              {["architecture", "clothing", "cuisine", "tool"].map((cat) => (
                 <label key={cat}>
                   <input
                     type="radio"
