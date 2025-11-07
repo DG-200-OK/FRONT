@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import AdministratorLayout from "@/layouts/AdministratorLayout";
+import { searchCrawler } from "@/api/crawlerApi"; // ✅ 백엔드 API 연결 추가
 
 const SectionTitle = styled.h2`
   font-size: 18px;
@@ -105,7 +106,6 @@ const ProgressCircle = styled.div`
   transition: background 0.3s ease;
   z-index: 0;
 
-  /* 안쪽 흰색 원 (도넛 모양 만들기) */
   &::after {
     content: "";
     position: absolute;
@@ -113,19 +113,17 @@ const ProgressCircle = styled.div`
     height: 85px;
     background: white;
     border-radius: 50%;
-    z-index: 0; /* 숫자보다 아래로 */
+    z-index: 0;
   }
 
-  /* 가운데 % 숫자 */
   span {
     position: absolute;
     font-size: 22px;
     font-weight: bold;
     color: #4a82d9;
-    z-index: 1; /* 흰색 원보다 위로 */
+    z-index: 1;
   }
 `;
-
 
 const ModalButtons = styled.div`
   display: flex;
@@ -154,10 +152,20 @@ const Crawler = () => {
     return () => clearInterval(timer);
   }, [isRunning, progress]);
 
-  const handleSubmit = (e) => {
+  // ✅ 서버와 실제 연결하는 부분
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setProgress(0);
     setIsRunning(true);
+
+    console.log("✅ API 호출 시도");
+
+    try {
+      const result = await searchCrawler(keyword); // 실제 백엔드 요청
+      console.log("✅ API 결과:", result);
+    } catch (error) {
+      console.error("❌ API 호출 실패:", error);
+    }
   };
 
   return (
@@ -235,9 +243,14 @@ const Crawler = () => {
       {isRunning && (
         <ModalOverlay>
           <ModalBox>
-            <ProgressCircle progress={progress}><span>{progress}%</span></ProgressCircle>
+            <ProgressCircle progress={progress}>
+              <span>{progress}%</span>
+            </ProgressCircle>
             <h3>진행중</h3>
-            <p>소요된 시간: {Math.floor(progress / 10)}초 · 평균속도: {progress * 2}KB/s</p>
+            <p>
+              소요된 시간: {Math.floor(progress / 10)}초 · 평균속도:{" "}
+              {progress * 2}KB/s
+            </p>
             <ModalButtons>
               {progress < 100 && (
                 <Button type="button" onClick={() => setIsRunning(false)}>

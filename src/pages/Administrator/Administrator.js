@@ -35,14 +35,8 @@ const sliderSettings = {
   prevArrow: <Arrow dir="prev" />,
   nextArrow: <Arrow dir="next" />,
   responsive: [
-    {
-      breakpoint: 1024,
-      settings: { slidesToShow: 2, slidesToScroll: 2 },
-    },
-    {
-      breakpoint: 820,
-      settings: { slidesToShow: 1, slidesToScroll: 1 },
-    },
+    { breakpoint: 1024, settings: { slidesToShow: 2, slidesToScroll: 2 } },
+    { breakpoint: 820, settings: { slidesToShow: 1, slidesToScroll: 1 } },
   ],
 };
 
@@ -83,28 +77,27 @@ const Administrator = () => {
               <th>이미지</th>
               <th>데이터명</th>
               <th>Score A 일치율</th>
+              <th>Score C 일치율</th> {/* ✅ 추가됨 */}
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>
-                <ImageBox>이미지</ImageBox>
-              </td>
+              <td><ImageBox>이미지</ImageBox></td>
               <td>
                 <strong>불고기</strong>
                 <SubText>국가: 한국 / 분류: cuisine</SubText>
               </td>
               <td>80%</td>
+              <td>92%</td> {/* ✅ 추가 */}
             </tr>
             <tr>
-              <td>
-                <ImageBox>이미지</ImageBox>
-              </td>
+              <td><ImageBox>이미지</ImageBox></td>
               <td>
                 <strong>김치</strong>
                 <SubText>국가: 한국 / 분류: cuisine</SubText>
               </td>
               <td>45%</td>
+              <td>70%</td> {/* ✅ 추가 */}
             </tr>
           </tbody>
         </Table>
@@ -194,10 +187,10 @@ const TableSection = styled.div`
   max-width: 1133px;
   margin: 0 auto;
   background: #fff;
-  padding: 20px 24px; /* ✅ 좌우 여백 추가 */
+  padding: 20px 24px;
   border-radius: 12px;
   border: 1px solid #ddd;
-  box-sizing: border-box; /* ✅ 전체 너비에 padding 포함 */
+  box-sizing: border-box;
 `;
 
 const TableTitle = styled.h3`
@@ -209,7 +202,7 @@ const Table = styled.table`
   width: 100%;
   border-collapse: collapse;
   text-align: center;
-  table-layout: fixed; /* ✅ 셀 비율 균등하게 */
+  table-layout: fixed;
 
   th,
   td {
@@ -226,7 +219,6 @@ const Table = styled.table`
     border-bottom: 1px solid #ddd;
   }
 
-  /* ✅ 마지막 열 여백 보정 */
   tr > th:last-child,
   tr > td:last-child {
     padding-right: 20px;
