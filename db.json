@@ -1,0 +1,32 @@
+{
+  "crawler-score": [
+    {
+      "scoreA": 89,
+      "scoreC": 100
+    }
+  ],
+  "crawler-data": [
+    {
+      "scoreA": 89,
+      "scoreC": 100,
+      "country": "한국",
+      "category": "Cuisine",
+      "imageUrl": "https://..."
+    }
+  ],
+  "crawler-search": [
+    {
+      "progress": 89,
+      "time": 100,
+      "speed": 44
+    }
+  ],
+  "data-search": [
+    {
+      "category": "옷",
+      "image": "http~",
+      "total-data-set": 100,
+      "nation": "한국"
+    }
+  ]
+}
