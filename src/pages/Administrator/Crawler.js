@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
-import styled from "styled-components";
+import React, { useState } from "react";
+import styled, { keyframes } from "styled-components";
 import AdministratorLayout from "@/layouts/AdministratorLayout";
-import { searchCrawler } from "@/api/crawlerApi"; // ✅ 백엔드 API 연결 추가
+
+// --- 💅 스타일드 컴포넌트(Styled Components) 정의 ---
 
 const SectionTitle = styled.h2`
   font-size: 18px;
@@ -74,7 +75,7 @@ const ModalOverlay = styled.div`
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0,0,0,0.3);
+  background: rgba(0, 0, 0, 0.3);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -86,43 +87,8 @@ const ModalBox = styled.div`
   padding: 30px;
   border-radius: 12px;
   width: 420px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   text-align: center;
-`;
-
-const ProgressCircle = styled.div`
-  position: relative;
-  margin: 0 auto 20px;
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  background: conic-gradient(
-    #4a82d9 ${({ progress }) => progress * 3.6}deg,
-    #eaeaea ${({ progress }) => progress * 3.6}deg
-  );
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transition: background 0.3s ease;
-  z-index: 0;
-
-  &::after {
-    content: "";
-    position: absolute;
-    width: 85px;
-    height: 85px;
-    background: white;
-    border-radius: 50%;
-    z-index: 0;
-  }
-
-  span {
-    position: absolute;
-    font-size: 22px;
-    font-weight: bold;
-    color: #4a82d9;
-    z-index: 1;
-  }
 `;
 
 const ModalButtons = styled.div`
@@ -132,39 +98,96 @@ const ModalButtons = styled.div`
   margin-top: 20px;
 `;
 
+/* '무한 로딩' 스피너 스타일 */
+const spinAnimation = keyframes`
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+`;
+
+const Spinner = styled.div`
+  border: 8px solid #f3f3f3; /* Light grey */
+  border-top: 8px solid #4a82d9; /* Blue */
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  animation: ${spinAnimation} 1s linear infinite;
+  margin: 20px auto;
+`;
+
+// --- 💻 React 컴포넌트 정의 ---
+
 const Crawler = () => {
+  // 폼 입력 상태
   const [seedUrl, setSeedUrl] = useState("Wikimedia");
   const [category, setCategory] = useState("");
   const [extension, setExtension] = useState("JPEG");
   const [keyword, setKeyword] = useState("");
 
-  const [isRunning, setIsRunning] = useState(false);
-  const [progress, setProgress] = useState(0);
+  // 모달 및 API 상태
+  const [isRunning, setIsRunning] = useState(false); // 모달창 표시 여부
+  const [apiResult, setApiResult] = useState(null); // API 성공 결과
+  const [apiError, setApiError] = useState(null); // API 실패 에러
 
-  // 진행률 시뮬레이션
-  useEffect(() => {
-    let timer;
-    if (isRunning && progress < 100) {
-      timer = setInterval(() => {
-        setProgress((prev) => (prev < 100 ? prev + 5 : 100));
-      }, 500);
-    }
-    return () => clearInterval(timer);
-  }, [isRunning, progress]);
-
-  // ✅ 서버와 실제 연결하는 부분
+  /**
+   * '탐색하기' 버튼 클릭 시 실행되는 함수
+   */
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setProgress(0);
-    setIsRunning(true);
+    e.preventDefault(); // 폼 기본 동작(새로고침) 방지
 
-    console.log("✅ API 호출 시도");
+    if (!category || !keyword) {
+      alert("카테고리와 검색어를 모두 입력해주세요.");
+      return;
+    }
+
+    // 모달을 '로딩' 상태로 표시
+    setIsRunning(true);
+    setApiResult(null); // 이전 API 결과 초기화
+    setApiError(null); // 이전 API 에러 초기화
+
+    console.log("✅ API 호출 시도 (GET /crawler-search)");
+
+    // 💡 결과를 임시로 저장할 변수
+    let tempResult = null;
+    let tempError = null;
 
     try {
-      const result = await searchCrawler(keyword); // 실제 백엔드 요청
-      console.log("✅ API 결과:", result);
+      const queryParams = new URLSearchParams({
+        seedUrl: seedUrl,
+        category: category,
+        extension: extension,
+        keyword: keyword,
+      }).toString();
+
+    const response = await fetch(
+  `http://localhost:4000/crawler_search?${queryParams}`,
+  { method: "GET" }
+);
+
+
+      if (!response.ok) {
+        throw new Error(`HTTP Error! Status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log("✅ API 결과 수신:", result);
+      tempResult = result; // ⬅️ 결과를 임시 변수에 저장
+
     } catch (error) {
       console.error("❌ API 호출 실패:", error);
+      tempError = error.message; // ⬅️ 에러를 임시 변수에 저장
+    }
+
+    // --- 💡 3초 딜레이 추가 ---
+    console.log("API 응답 완료. 3초간 로딩 상태 유지...");
+    await new Promise(resolve => setTimeout(resolve, 3000)); // 3초 대기
+    console.log("3초 딜레이 완료. 모달 상태 업데이트.");
+    // -------------------------
+
+    // 딜레이가 끝난 후, 임시 변수의 값으로 실제 상태 업데이트
+    if (tempError) {
+      setApiError(tempError);
+    } else {
+      setApiResult(tempResult);
     }
   };
 
@@ -234,35 +257,59 @@ const Crawler = () => {
 
           {/* 버튼 */}
           <ButtonGroup>
-            <Button type="submit">탐색하기</Button>
+            <Button type="submit" disabled={isRunning && !apiResult && !apiError}>
+              탐색하기
+            </Button>
           </ButtonGroup>
         </form>
       </Content>
 
-      {/* 진행 모달 */}
+      {/* 진행 모달 (API 상태에 따라 내용 변경) */}
       {isRunning && (
         <ModalOverlay>
           <ModalBox>
-            <ProgressCircle progress={progress}>
-              <span>{progress}%</span>
-            </ProgressCircle>
-            <h3>진행중</h3>
-            <p>
-              소요된 시간: {Math.floor(progress / 10)}초 · 평균속도:{" "}
-              {progress * 2}KB/s
-            </p>
-            <ModalButtons>
-              {progress < 100 && (
-                <Button type="button" onClick={() => setIsRunning(false)}>
-                  중지
-                </Button>
-              )}
-              {progress >= 100 && (
-                <Button type="button" onClick={() => setIsRunning(false)}>
-                  닫기
-                </Button>
-              )}
-            </ModalButtons>
+            
+            {/* 1. API 에러가 발생한 경우 (실패) */}
+            {apiError ? (
+              <>
+                <h3 style={{ color: "red" }}>❌ 탐색 실패</h3>
+                <p style={{ wordBreak: "keep-all", margin: "15px 0" }}>
+                  오류가 발생했습니다:
+                  <br />
+                  <strong>{apiError}</strong>
+                </p>
+                <ModalButtons>
+                  <Button type="button" onClick={() => setIsRunning(false)}>
+                    닫기
+                  </Button>
+                </ModalButtons>
+              </>
+            ) 
+            /* 2. API 결과가 도착한 경우 (성공) */
+            : apiResult ? (
+              <>
+                <h3 style={{ color: "green" }}>✅ 탐색 완료</h3>
+                <p style={{ margin: "15px 0" }}>
+                  크롤링 작업이 성공적으로 완료되었습니다.
+                </p>
+                <ModalButtons>
+                  <Button type="button" onClick={() => setIsRunning(false)}>
+                    닫기
+                  </Button>
+                </ModalButtons>
+              </>
+            ) 
+            /* 3. API 응답을 기다리는 '무한 로딩' 상태 */
+            : (
+              <>
+                <Spinner /> {/* 무한 로딩 스피너 */}
+                <h3>진행중</h3>
+                <p style={{ color: "#555" }}>
+                  서버에서 데이터를 가져오는 중입니다...
+                </p>
+              </>
+            )}
+
           </ModalBox>
         </ModalOverlay>
       )}

@@ -1,6 +1,10 @@
 import React from "react";
 import styled from "styled-components";
-import mainPageImg from "@/assets/img/1_mainpage.png";
+import mainPageImg5 from "@/assets/img/5_mainpage.png";
+import mainPageImg6 from "@/assets/img/6_mainpage.png";
+import mainPageImg7 from "@/assets/img/7_mainpage.png";
+import mainPageImg8 from "@/assets/img/8_mainpage.png";
+
 
 // ✅ 모달 배경
 const Modal = styled.div`
@@ -169,7 +173,7 @@ const ABTestScenariosViewer = ({ isOpen, onClose }) => {
               <br />‘크롤링’ 버튼을 클릭하면 크롤링이 시작됩니다.
             </Paragraph>
           </ScenarioContent>
-          <ScenarioImage src={mainPageImg} alt="메인 페이지 스크린샷" />
+          <ScenarioImage src={mainPageImg5} alt="메인 페이지 스크린샷" />
         </TestScenarioCard>
 
         <TestScenarioCard>
@@ -179,7 +183,7 @@ const ABTestScenariosViewer = ({ isOpen, onClose }) => {
               서버에서 <b>mcp.py</b>가 실행되어 클라이언트 요청을 받아 각 사이트 크롤러를 제어합니다.
             </Paragraph>
           </ScenarioContent>
-          <ScenarioImage src={mainPageImg} alt="서버 구조 이미지" />
+          <ScenarioImage src={mainPageImg6} alt="서버 구조 이미지" />
         </TestScenarioCard>
 
         <TestScenarioCard>
@@ -190,7 +194,7 @@ const ABTestScenariosViewer = ({ isOpen, onClose }) => {
               <br />image_url, image_src, description 데이터 쌍을 수집합니다.
             </Paragraph>
           </ScenarioContent>
-          <ScenarioImage src={mainPageImg} alt="크롤링 프로세스" />
+          <ScenarioImage src={mainPageImg7} alt="크롤링 프로세스" />
         </TestScenarioCard>
 
         <TestScenarioCard>
@@ -201,7 +205,7 @@ const ABTestScenariosViewer = ({ isOpen, onClose }) => {
               <br />image_url과 description은 데이터베이스(DB)에 저장되며 크롤링이 종료됩니다.
             </Paragraph>
           </ScenarioContent>
-          <ScenarioImage src={mainPageImg} alt="데이터 저장 단계" />
+          <ScenarioImage src={mainPageImg8} alt="데이터 저장 단계" />
         </TestScenarioCard>
 
         <Paragraph

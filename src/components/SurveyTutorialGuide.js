@@ -1,6 +1,8 @@
 import React from "react";
 import styled from "styled-components";
-import mainPageImg from "@/assets/img/1_mainpage.png";
+import mainPageImg1 from "@/assets/img/1_mainpage.png";
+import mainPageImg2 from "@/assets/img/2_mainpage.png";
+import mainPageImg3 from "@/assets/img/3_mainpage.png";
 
 // ✅ 모달 배경
 const Modal = styled.div`
@@ -174,7 +176,7 @@ const SurveyTutorialGuide = ({ isOpen, onClose }) => {
               순위를 학습하며, 학습된 모델이 이미지–캡션 벡터의 코사인 유사도를 계산해 점수를 부여.
             </Paragraph>
           </ScenarioContent>
-          <ScenarioImage src={mainPageImg} alt="Score A 평가" />
+          <ScenarioImage src={mainPageImg1} alt="Score A 평가" />
         </TestScenarioCard>
 
         {/* ✅ Score C */}
@@ -193,7 +195,7 @@ const SurveyTutorialGuide = ({ isOpen, onClose }) => {
               BLIP VQA 모델로 두 정보를 교차 검증하여 환각·누락 정도를 산출.
             </Paragraph>
           </ScenarioContent>
-          <ScenarioImage src={mainPageImg} alt="Score C 평가" />
+          <ScenarioImage src={mainPageImg2} alt="Score C 평가" />
         </TestScenarioCard>
 
         {/* ✅ 평가 흐름 */}
@@ -211,7 +213,7 @@ const SurveyTutorialGuide = ({ isOpen, onClose }) => {
               각각의 점수가 자동으로 산출된다.
             </Paragraph>
           </ScenarioContent>
-          <ScenarioImage src={mainPageImg} alt="평가 흐름" />
+          <ScenarioImage src={mainPageImg3} alt="평가 흐름" />
         </TestScenarioCard>
 
         <Paragraph

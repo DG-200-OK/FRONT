@@ -180,7 +180,7 @@ class Login extends Component {
   goUser = async (e) => {
     e.preventDefault();
     alert("개발: 유저 로그인");
-    this.props.navigate("/mainpage");
+    this.props.navigate("/main");
     localStorage.setItem('user_id', "user");
   };
 

@@ -1,23 +1,32 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import BarChart from "../Chart/BarChart"; // ✅ BarChart import
-import "../Chart/BarChart.css"; // ✅ 스타일 적용
+import BarChart from "../Chart/BarChart";
+import "../Chart/BarChart.css";
 
-// 🔹 임시 데이터 (나중에 API 연결 가능)
-const sampleData = {
-  // labels: ["A", "B", "C"],
-  labels: ["A", "C"],
-  human: [60, 80, 40],
-  ai: [55, 75, 35],
-};
+const ChartPreview = ({ kor_title, title }) => {
+  const [chartData, setChartData] = useState(null);
 
-const ChartPreview = ({ kor_title, title, apiEndpoint }) => {
+  useEffect(() => {
+    fetch("http://localhost:4000/crawler_score")
+      .then((res) => res.json())
+      .then((data) => {
+        const d = data[0];
+        // ✅ 각 ChartPreview가 title 에 따라 다른 값 세팅
+        if (title === "Score A") {
+          setChartData({ human: [d.scoreA] });
+        } else if (title === "Score C") {
+          setChartData({ human: [d.scoreC] });
+        }
+      })
+      .catch((err) => console.error("❌ Fetch 실패:", err));
+  }, [title]); // ✅ title별로 분리 렌더링
+
+  if (!chartData) return <ChartBox>로딩 중...</ChartBox>;
+
   return (
     <ChartBox>
       <ChartTitle>{kor_title}</ChartTitle>
-
-      {/* ✅ 실제 차트 삽입 */}
-      <BarChart title={title} theme="architecture" data={sampleData} />
+      <BarChart title={title} theme="architecture" data={chartData} />
     </ChartBox>
   );
 };
@@ -26,7 +35,7 @@ export default ChartPreview;
 
 /* ----- 스타일 ----- */
 const ChartBox = styled.div`
-  flex: 1; /* ✅ 3개 균등 분배 */
+  flex: 1;
   min-width: 0;
   background: #f9f9f9;
   border: 1px solid #ddd;
@@ -36,13 +45,11 @@ const ChartBox = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  overflow: visible;
 `;
 
 const ChartTitle = styled.h4`
   font-size: 14px;
   margin: 0 0 8px 0;
   word-break: keep-all;
-  white-space: normal;
   line-height: 1.4;
 `;

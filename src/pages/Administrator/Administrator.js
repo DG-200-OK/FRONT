@@ -1,28 +1,13 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-
 import AdministratorLayout from "@/layouts/AdministratorLayout";
 import ChartPreview from "./ChartPreview";
 
-const categories = ["architecture", "clothing", "cuisine", "tool"];
+const categories = ["cuisine", "clothing", "architecture", "tool"];
 
-// 🔹 커스텀 화살표
-const Arrow = ({ className, style, onClick, dir }) => (
-  <ArrowBtn
-    className={className}
-    style={style}
-    onClick={onClick}
-    $dir={dir}
-    aria-label={dir === "prev" ? "이전" : "다음"}
-  >
-    {dir === "prev" ? "‹" : "›"}
-  </ArrowBtn>
-);
-
-// 🔹 슬라이더 설정
 const sliderSettings = {
   arrows: true,
   dots: false,
@@ -30,10 +15,6 @@ const sliderSettings = {
   speed: 350,
   slidesToShow: 2,
   slidesToScroll: 2,
-  variableWidth: false,
-  centerMode: false,
-  prevArrow: <Arrow dir="prev" />,
-  nextArrow: <Arrow dir="next" />,
   responsive: [
     { breakpoint: 1024, settings: { slidesToShow: 2, slidesToScroll: 2 } },
     { breakpoint: 820, settings: { slidesToShow: 1, slidesToScroll: 1 } },
@@ -41,6 +22,15 @@ const sliderSettings = {
 };
 
 const Administrator = () => {
+  const [tableData, setTableData] = useState([]);
+
+  useEffect(() => {
+    fetch("http://localhost:4000/crawler_data")
+      .then((res) => res.json())
+      .then((json) => setTableData(json))
+      .catch((err) => console.error("❌ 데이터 불러오기 실패:", err));
+  }, []);
+
   return (
     <AdministratorLayout>
       {/* 🔹 상단 슬라이더 */}
@@ -77,28 +67,35 @@ const Administrator = () => {
               <th>이미지</th>
               <th>데이터명</th>
               <th>Score A 일치율</th>
-              <th>Score C 일치율</th> {/* ✅ 추가됨 */}
+              <th>Score C 일치율</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td><ImageBox>이미지</ImageBox></td>
-              <td>
-                <strong>불고기</strong>
-                <SubText>국가: 한국 / 분류: cuisine</SubText>
-              </td>
-              <td>80%</td>
-              <td>92%</td> {/* ✅ 추가 */}
-            </tr>
-            <tr>
-              <td><ImageBox>이미지</ImageBox></td>
-              <td>
-                <strong>김치</strong>
-                <SubText>국가: 한국 / 분류: cuisine</SubText>
-              </td>
-              <td>45%</td>
-              <td>70%</td> {/* ✅ 추가 */}
-            </tr>
+            {tableData.map((item) => (
+              <tr key={item.id}>
+                <td>
+                  <ImageBox>
+                    <img
+                      src={item.imageUrl}
+                      alt={item.name}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        borderRadius: "8px",
+                      }}
+                    />
+                  </ImageBox>
+                </td>
+                <td>
+                  <strong>{item.name}</strong>
+                  <SubText>
+                    국가: {item.country} / 분류: {item.category}
+                  </SubText>
+                </td>
+                <td>{item.scoreA}%</td>
+                <td>{item.scoreC}%</td>
+              </tr>
+            ))}
           </tbody>
         </Table>
       </TableSection>
@@ -108,7 +105,7 @@ const Administrator = () => {
 
 export default Administrator;
 
-/* ------------------- 스타일 ------------------- */
+/* ---------------- 스타일 ---------------- */
 const TopCarousel = styled.div`
   width: 100%;
   max-width: 1200px;
@@ -164,24 +161,6 @@ const ChartsRow = styled.div`
   justify-content: space-between;
 `;
 
-const ArrowBtn = styled.button`
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  ${(p) => (p.$dir === "prev" ? "left: -12px;" : "right: -12px;")}
-  z-index: 2;
-  width: 32px;
-  height: 32px;
-  border: none;
-  border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
-  cursor: pointer;
-  line-height: 32px;
-  font-size: 22px;
-`;
-
-/* ---------- 하단 테이블 ---------- */
 const TableSection = styled.div`
   width: 100%;
   max-width: 1133px;
@@ -237,6 +216,13 @@ const ImageBox = styled.div`
   color: #777;
   font-size: 14px;
   margin: 0 auto;
+
+  img {
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    object-fit: cover;
+  }
 `;
 
 const SubText = styled.div`

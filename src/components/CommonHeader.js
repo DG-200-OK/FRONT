@@ -143,7 +143,7 @@ const Header = () => {
 
   return (
     <HeaderContainer>
-      <LogoWrapper to="/mainpage">
+      <LogoWrapper to="/main">
         <LogoImageStyled src={LogoImage} alt="로고" />
       </LogoWrapper>
 

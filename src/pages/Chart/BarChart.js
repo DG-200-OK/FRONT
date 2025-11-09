@@ -1,69 +1,51 @@
 import React from "react";
 import "./BarChart.css";
 
-// 차트의 최대값 (Y축)
-const MAX_VALUE = 100; // 0-100 스케일
+const MAX_VALUE = 100;
+const MIN_VALUE = 0;
 
 function BarChart({ title, theme, data }) {
-  const { labels, human, ai } = data;
+  const { human } = data;
 
-  // 값(0~100)을 퍼센트 높이(0~100%)로 변환
-  const getBarHeight = (value) => (value / MAX_VALUE) * 100 + "%";
+  // ✅ 0~100 범위로 clamp (값이 0보다 작거나 100보다 큰 경우 보정)
+  const clamp = (v) => Math.min(Math.max(v, MIN_VALUE), MAX_VALUE);
+
+  // ✅ 퍼센트 변환
+  const getBarHeight = (value) => `${(clamp(value) / MAX_VALUE) * 100}%`;
 
   return (
     <div className="chart-container">
       <h5 className="chart-title">{title}</h5>
 
-      {/* 차트 상단 범례 */}
-      <div className="chart-legend">
-        <div className="legend-item">
-          <span className={`legend-dot human ${theme}`}></span>
-          사람 평가
-        </div>
-        <div className="legend-item">
-          <span className={`legend-dot ai ${theme}`}></span>
-          AI 평가
-        </div>
-      </div>
-
-      {/* 차트 본체 (Y축 + 바 그룹) */}
       <div className="chart-body">
-        {/* Y축 레이블 (80, 60, 40, 20, 0) */}
+        {/* 왼쪽 Y축 */}
         <div className="y-axis">
-          <span>80</span>
-          <span>60</span>
-          <span>40</span>
-          <span>20</span>
-          <span>0</span>
+          {[100, 80, 60, 40, 20, 0].map((v) => (
+            <span key={v}>{v}</span>
+          ))}
         </div>
 
-        {/* 바 그룹 */}
+        {/* 오른쪽 차트 본체 */}
         <div className="chart-bars-area">
-          {/* Y축 가로 점선 (위치 수동 지정) */}
+          {/* Y축 그리드선 */}
           <div className="y-grid-lines">
-            <div className="grid-line" style={{ bottom: "80%" }}></div>
-            <div className="grid-line" style={{ bottom: "60%" }}></div>
-            <div className="grid-line" style={{ bottom: "40%" }}></div>
-            <div className="grid-line" style={{ bottom: "20%" }}></div>
+            {[80, 60, 40, 20].map((v) => (
+              <div key={v} className="grid-line" style={{ bottom: `${v}%` }}></div>
+            ))}
           </div>
 
-          {/* 실제 바 */}
+          {/* 막대 */}
           <div className="chart-bars">
-            {labels.map((label, index) => (
-              <div className="bar-group" key={label}>
-                <div className="bars">
-                  <div
-                    className={`bar human ${theme}`}
-                    style={{ height: getBarHeight(human[index]) }}
-                  ></div>
-                  <div
-                    className={`bar ai ${theme}`}
-                    style={{ height: getBarHeight(ai[index]) }}
-                  ></div>
-                </div>
-                <span className="bar-label">{label}</span>
+            <div className="bar-group">
+              <div className="bars single">
+                <div
+                  className={`bar human ${theme}`}
+                  style={{ height: getBarHeight(human[0]) }}
+                ></div>
               </div>
-            ))}
+              {/* 값 표시 (선택 사항) */}
+              <div className="bar-label">{clamp(human[0])}%</div>
+            </div>
           </div>
         </div>
       </div>

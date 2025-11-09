@@ -1,32 +1,60 @@
 {
-  "crawler-score": [
+  "crawler_score": [
     {
       "scoreA": 89,
       "scoreC": 100
     }
   ],
-  "crawler-data": [
+
+  "crawler_data": [
     {
-      "scoreA": 89,
-      "scoreC": 100,
+      "id": 1,
+      "imageUrl": "https://example.com/images/bulgogi.jpg",
+      "name": "불고기",
       "country": "한국",
       "category": "Cuisine",
-      "imageUrl": "https://..."
+      "scoreA": 80,
+      "scoreC": 92
+    },
+    {
+      "id": 2,
+      "imageUrl": "https://example.com/images/kimchi.jpg",
+      "name": "김치",
+      "country": "한국",
+      "category": "Cuisine",
+      "scoreA": 45,
+      "scoreC": 70
     }
   ],
-  "crawler-search": [
+
+  "crawler_search": [
     {
-      "progress": 89,
-      "time": 100,
-      "speed": 44
+      "end": 100
     }
   ],
-  "data-search": [
+
+  "data_search": [
     {
+      "id": "bb73",
       "category": "옷",
-      "image": "http~",
-      "total-data-set": 100,
+      "image": "https://example.com/images/hanbok.jpg",
+      "total_data_set": 100,
       "nation": "한국"
+    },
+    {
+      "id": "b632",
+      "category": "Cuisine",
+      "nation": "한국"
+    },
+    {
+      "id": "301a",
+      "category": "Cuisine",
+      "nation": "미국"
+    },
+    {
+      "id": "44d2",
+      "category": "Cuisine",
+      "nation": "중국"
     }
   ]
 }

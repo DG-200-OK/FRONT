@@ -1,7 +1,9 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import styled from "styled-components";
-import wassersteinImage from "../assets/img/wasserstein_distance.png";
+import wassersteinImage from "@/assets/img/wasserstein_distance.png";
+
+
 
 const ModalOverlay = styled.div`
   position: fixed;
