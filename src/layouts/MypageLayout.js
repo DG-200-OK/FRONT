@@ -22,8 +22,8 @@ const RightContent = styled.div`
   padding: 0px 20px;
   overflow-y: auto;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+   justify-content: flex-start;   /* 🔥 위로 정렬 */
+  padding-top: 20px;             /* 🔥 약간의 상단 여백 추가 (선택) */
 `;
 
 const MypageLayout = ({ children }) => {

@@ -1,15 +1,15 @@
 {
   "crawler_score": [
     {
-      "scoreA": 89,
-      "scoreC": 100
+      "scoreA": 79,
+      "scoreC": 50
     }
   ],
 
   "crawler_data": [
     {
       "id": 1,
-      "imageUrl": "https://example.com/images/bulgogi.jpg",
+      "imageUrl": "../assets/img/bulgogi.png",
       "name": "불고기",
       "country": "한국",
       "category": "Cuisine",
@@ -18,7 +18,7 @@
     },
     {
       "id": 2,
-      "imageUrl": "https://example.com/images/kimchi.jpg",
+      "imageUrl": "../assets/img/kimchi.png",
       "name": "김치",
       "country": "한국",
       "category": "Cuisine",

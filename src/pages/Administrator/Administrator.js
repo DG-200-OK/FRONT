@@ -25,9 +25,26 @@ const Administrator = () => {
   const [tableData, setTableData] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:4000/crawler_data")
+    fetch("http://43.200.70.251:8000/api/crawl/data")
       .then((res) => res.json())
-      .then((json) => setTableData(json))
+      .then((json) => {
+        console.log("📌 서버 원본 데이터:", json);
+
+        const arr = json.responseData ?? [];
+        console.log("📌 배열 데이터 길이:", arr.length);
+
+        const cleaned = arr.map((item, index) => ({
+          id: item.id ?? index,
+          imageUrl: item.image_url,
+          scoreA: item.score_a,
+          scoreC: item.score_c,
+          country: item.country ?? "",
+          category: item.category ?? "",
+        }));
+
+        console.log("📌 매핑된 cleaned 데이터:", cleaned);
+        setTableData(cleaned);
+      })
       .catch((err) => console.error("❌ 데이터 불러오기 실패:", err));
   }, []);
 
@@ -41,15 +58,16 @@ const Administrator = () => {
               <CategoryCard>
                 <CategoryTitle>{cat}</CategoryTitle>
                 <ChartsRow>
+                  {/* ⭐ category 전달해야 avg_score 호출됨 */}
                   <ChartPreview
                     title="Score A"
                     kor_title="깊이의 풍부함"
-                    apiEndpoint={`/api/chart/${cat}/meaning`}
+                    category={cat}
                   />
                   <ChartPreview
-                    title="Score C"
+                    title="Score B"
                     kor_title="사실적 충실도"
-                    apiEndpoint={`/api/chart/${cat}/clarity`}
+                    category={cat}
                   />
                 </ChartsRow>
               </CategoryCard>
@@ -67,36 +85,38 @@ const Administrator = () => {
               <th>이미지</th>
               <th>데이터명</th>
               <th>Score A 일치율</th>
-              <th>Score C 일치율</th>
+              <th>Score B 일치율</th>
             </tr>
           </thead>
-          <tbody>
-            {tableData.map((item) => (
-              <tr key={item.id}>
-                <td>
-                  <ImageBox>
-                    <img
-                      src={item.imageUrl}
-                      alt={item.name}
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        borderRadius: "8px",
-                      }}
-                    />
-                  </ImageBox>
-                </td>
-                <td>
-                  <strong>{item.name}</strong>
-                  <SubText>
-                    국가: {item.country} / 분류: {item.category}
-                  </SubText>
-                </td>
-                <td>{item.scoreA}%</td>
-                <td>{item.scoreC}%</td>
-              </tr>
-            ))}
-          </tbody>
+        <tbody>
+  {tableData.map((item, index) => (
+    <tr key={`${index}-${item.category}-${item.imageUrl}`}>
+      <td>
+        <ImageBox>
+          <img
+            src={item.imageUrl}
+            alt={item.category}
+            style={{
+              width: "100%",
+              height: "100%",
+              borderRadius: "8px",
+            }}
+          />
+        </ImageBox>
+      </td>
+
+      {/* ⭐ UI 전용 표시값 */}
+      <td>
+        <strong>{item.category}</strong>
+        <SubText>국가: 한국 / 분류: Cuisine</SubText>
+      </td>
+
+      <td>{item.scoreA}%</td>
+      <td>{item.scoreC}%</td>
+    </tr>
+  ))}
+</tbody>
+
         </Table>
       </TableSection>
     </AdministratorLayout>
@@ -106,6 +126,7 @@ const Administrator = () => {
 export default Administrator;
 
 /* ---------------- 스타일 ---------------- */
+
 const TopCarousel = styled.div`
   width: 100%;
   max-width: 1200px;
@@ -197,11 +218,6 @@ const Table = styled.table`
     font-weight: 600;
     border-bottom: 1px solid #ddd;
   }
-
-  tr > th:last-child,
-  tr > td:last-child {
-    padding-right: 20px;
-  }
 `;
 
 const ImageBox = styled.div`
@@ -213,16 +229,6 @@ const ImageBox = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #777;
-  font-size: 14px;
-  margin: 0 auto;
-
-  img {
-    width: 100%;
-    height: 100%;
-    border-radius: 8px;
-    object-fit: cover;
-  }
 `;
 
 const SubText = styled.div`

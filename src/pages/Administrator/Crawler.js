@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import styled, { keyframes } from "styled-components";
 import AdministratorLayout from "@/layouts/AdministratorLayout";
 
-// --- 💅 스타일드 컴포넌트(Styled Components) 정의 ---
+/* ------------------- Styled Components ------------------- */
 
 const SectionTitle = styled.h2`
   font-size: 18px;
@@ -68,7 +68,6 @@ const Button = styled.button`
   }
 `;
 
-/* 진행 모달 */
 const ModalOverlay = styled.div`
   position: fixed;
   top: 0;
@@ -98,15 +97,14 @@ const ModalButtons = styled.div`
   margin-top: 20px;
 `;
 
-/* '무한 로딩' 스피너 스타일 */
 const spinAnimation = keyframes`
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 `;
 
 const Spinner = styled.div`
-  border: 8px solid #f3f3f3; /* Light grey */
-  border-top: 8px solid #4a82d9; /* Blue */
+  border: 8px solid #f3f3f3; 
+  border-top: 8px solid #4a82d9;
   border-radius: 50%;
   width: 80px;
   height: 80px;
@@ -114,76 +112,72 @@ const Spinner = styled.div`
   margin: 20px auto;
 `;
 
-// --- 💻 React 컴포넌트 정의 ---
+/* ------------------- React Component ------------------- */
 
 const Crawler = () => {
-  // 폼 입력 상태
   const [seedUrl, setSeedUrl] = useState("Wikimedia");
   const [category, setCategory] = useState("");
   const [extension, setExtension] = useState("JPEG");
   const [keyword, setKeyword] = useState("");
 
-  // 모달 및 API 상태
-  const [isRunning, setIsRunning] = useState(false); // 모달창 표시 여부
-  const [apiResult, setApiResult] = useState(null); // API 성공 결과
-  const [apiError, setApiError] = useState(null); // API 실패 에러
+  const [isRunning, setIsRunning] = useState(false);
+  const [apiResult, setApiResult] = useState(null);
+  const [apiError, setApiError] = useState(null);
 
-  /**
-   * '탐색하기' 버튼 클릭 시 실행되는 함수
-   */
   const handleSubmit = async (e) => {
-    e.preventDefault(); // 폼 기본 동작(새로고침) 방지
+    e.preventDefault();
 
-    if (!category || !keyword) {
-      alert("카테고리와 검색어를 모두 입력해주세요.");
+    if (!keyword) {
+      alert("검색어를 입력해주세요.");
       return;
     }
 
-    // 모달을 '로딩' 상태로 표시
     setIsRunning(true);
-    setApiResult(null); // 이전 API 결과 초기화
-    setApiError(null); // 이전 API 에러 초기화
+    setApiResult(null);
+    setApiError(null);
 
-    console.log("✅ API 호출 시도 (GET /crawler-search)");
-
-    // 💡 결과를 임시로 저장할 변수
     let tempResult = null;
     let tempError = null;
 
     try {
-      const queryParams = new URLSearchParams({
-        seedUrl: seedUrl,
-        category: category,
-        extension: extension,
-        keyword: keyword,
-      }).toString();
+      console.log("🚀 /api/crawl 시작");
 
-    const response = await fetch(
-  `http://localhost:4000/crawler_search?${queryParams}`,
-  { method: "GET" }
-);
+      const crawlRes = await fetch("http://43.200.70.251:8000/api/crawl", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: keyword }),
+      });
 
+      if (!crawlRes.ok) throw new Error(`크롤링 실패: ${crawlRes.status}`);
 
-      if (!response.ok) {
-        throw new Error(`HTTP Error! Status: ${response.status}`);
-      }
+      console.log("🚀 /api/crawl/evaluate 시작");
 
-      const result = await response.json();
-      console.log("✅ API 결과 수신:", result);
-      tempResult = result; // ⬅️ 결과를 임시 변수에 저장
+      const evalRes = await fetch(
+        "http://43.200.70.251:8000/api/crawl/evaluate",
+        { method: "POST" }
+      );
 
-    } catch (error) {
-      console.error("❌ API 호출 실패:", error);
-      tempError = error.message; // ⬅️ 에러를 임시 변수에 저장
+      if (!evalRes.ok)
+        throw new Error(`평가 실패: ${evalRes.status}`);
+
+      console.log("🚀 /api/crawl/data 가져오는 중…");
+
+      const dataRes = await fetch(
+        "http://43.200.70.251:8000/api/crawl/data",
+        { method: "GET" }
+      );
+
+      if (!dataRes.ok)
+        throw new Error(`데이터 조회 실패: ${dataRes.status}`);
+
+      tempResult = await dataRes.json();
+    } catch (err) {
+      console.error("❌ FETCH ERROR:", err);
+      tempError = err.message;
     }
 
-    // --- 💡 3초 딜레이 추가 ---
-    console.log("API 응답 완료. 3초간 로딩 상태 유지...");
-    await new Promise(resolve => setTimeout(resolve, 3000)); // 3초 대기
-    console.log("3초 딜레이 완료. 모달 상태 업데이트.");
-    // -------------------------
+    await new Promise((resolve) => setTimeout(resolve, 3000));
 
-    // 딜레이가 끝난 후, 임시 변수의 값으로 실제 상태 업데이트
     if (tempError) {
       setApiError(tempError);
     } else {
@@ -195,37 +189,42 @@ const Crawler = () => {
     <AdministratorLayout>
       <Content>
         <SectionTitle>크롤러</SectionTitle>
+
         <form onSubmit={handleSubmit}>
-          {/* Seed URL */}
           <FormGroup>
             <Label>Seed URL</Label>
-            <Select value={seedUrl} onChange={(e) => setSeedUrl(e.target.value)}>
+            <Select
+              value={seedUrl}
+              onChange={(e) => setSeedUrl(e.target.value)}
+            >
               <option value="Wikimedia">Wikimedia</option>
               <option value="한국민속대백과사전">한국민속대백과사전</option>
-              <option value="한국민족문화대백과사전">한국민족문화대백과사전</option>
+              <option value="한국민족문화대백과사전">
+                한국민족문화대백과사전
+              </option>
             </Select>
           </FormGroup>
 
-          {/* 카테고리 */}
           <FormGroup>
             <Label>카테고리</Label>
             <RadioGroup>
-              {["architecture", "clothing", "cuisine", "tool"].map((cat) => (
-                <label key={cat}>
-                  <input
-                    type="radio"
-                    name="category"
-                    value={cat}
-                    checked={category === cat}
-                    onChange={(e) => setCategory(e.target.value)}
-                  />{" "}
-                  {cat}
-                </label>
-              ))}
+              {["architecture", "clothing", "cuisine", "tool"].map(
+                (cat) => (
+                  <label key={cat}>
+                    <input
+                      type="radio"
+                      name="category"
+                      value={cat}
+                      checked={category === cat}
+                      onChange={(e) => setCategory(e.target.value)}
+                    />{" "}
+                    {cat}
+                  </label>
+                )
+              )}
             </RadioGroup>
           </FormGroup>
 
-          {/* 이미지 확장자 */}
           <FormGroup>
             <Label>이미지 확장자</Label>
             <RadioGroup>
@@ -244,7 +243,6 @@ const Crawler = () => {
             </RadioGroup>
           </FormGroup>
 
-          {/* 검색어 */}
           <FormGroup>
             <Label>검색어</Label>
             <Input
@@ -255,21 +253,20 @@ const Crawler = () => {
             />
           </FormGroup>
 
-          {/* 버튼 */}
           <ButtonGroup>
-            <Button type="submit" disabled={isRunning && !apiResult && !apiError}>
+            <Button
+              type="submit"
+              disabled={isRunning && !apiResult && !apiError}
+            >
               탐색하기
             </Button>
           </ButtonGroup>
         </form>
       </Content>
 
-      {/* 진행 모달 (API 상태에 따라 내용 변경) */}
       {isRunning && (
         <ModalOverlay>
           <ModalBox>
-            
-            {/* 1. API 에러가 발생한 경우 (실패) */}
             {apiError ? (
               <>
                 <h3 style={{ color: "red" }}>❌ 탐색 실패</h3>
@@ -284,9 +281,7 @@ const Crawler = () => {
                   </Button>
                 </ModalButtons>
               </>
-            ) 
-            /* 2. API 결과가 도착한 경우 (성공) */
-            : apiResult ? (
+            ) : apiResult ? (
               <>
                 <h3 style={{ color: "green" }}>✅ 탐색 완료</h3>
                 <p style={{ margin: "15px 0" }}>
@@ -298,18 +293,15 @@ const Crawler = () => {
                   </Button>
                 </ModalButtons>
               </>
-            ) 
-            /* 3. API 응답을 기다리는 '무한 로딩' 상태 */
-            : (
+            ) : (
               <>
-                <Spinner /> {/* 무한 로딩 스피너 */}
+                <Spinner />
                 <h3>진행중</h3>
                 <p style={{ color: "#555" }}>
                   서버에서 데이터를 가져오는 중입니다...
                 </p>
               </>
             )}
-
           </ModalBox>
         </ModalOverlay>
       )}
