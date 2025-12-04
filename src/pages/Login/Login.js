@@ -137,23 +137,20 @@ class Login extends Component {
         const trimmedEmail = email.trim();
         const trimmedPassword = password.trim();
 
-        // 1) 관리자 가짜 로그인
         if (trimmedEmail === "admin" && trimmedPassword === "admin") {
-          localStorage.setItem("user_id", "9999"); // 가짜 관리자 ID
-          alert("관리자로 로그인되었습니다. (가짜 로그인)");
+          localStorage.setItem("user_id", "9999"); 
+          alert("관리자로 로그인되었습니다.");
           this.props.navigate("/administrator");
           return; // 여기서 종료 → 백엔드로 요청 안 감
         }
 
-        // 2) 일반 유저 가짜 로그인
         if (trimmedEmail === "user" && trimmedPassword === "user") {
-          localStorage.setItem("user_id", "1000"); // 가짜 유저 ID
-          alert("로그인에 성공했습니다. (가짜 로그인)");
+          localStorage.setItem("user_id", "1000"); 
+          alert("로그인에 성공했습니다.");
           this.props.navigate("/main");
           return; // 여기서 종료 → 백엔드로 요청 안 감
         }        
       }
-
 
       const formData = new URLSearchParams();
       formData.append('username', email.trim());
