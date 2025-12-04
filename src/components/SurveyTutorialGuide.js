@@ -179,12 +179,12 @@ const SurveyTutorialGuide = ({ isOpen, onClose }) => {
           <ScenarioImage src={mainPageImg1} alt="Score A 평가" />
         </TestScenarioCard>
 
-        {/* ✅ Score C */}
+        {/* ✅ Score B */}
         <TestScenarioCard>
           <ScenarioContent>
             <Paragraph>
               <StepNumber>2️</StepNumber>
-              <strong>Score C (사실성 기반 평가)</strong>
+              <strong>Score B (사실성 기반 평가)</strong>
               <br />
               <br />
               <strong>목적:</strong> 캡션이 이미지에 없는 내용(환각)을 포함하거나
@@ -195,7 +195,7 @@ const SurveyTutorialGuide = ({ isOpen, onClose }) => {
               BLIP VQA 모델로 두 정보를 교차 검증하여 환각·누락 정도를 산출.
             </Paragraph>
           </ScenarioContent>
-          <ScenarioImage src={mainPageImg2} alt="Score C 평가" />
+          <ScenarioImage src={mainPageImg2} alt="Score B 평가" />
         </TestScenarioCard>
 
         {/* ✅ 평가 흐름 */}
@@ -208,7 +208,7 @@ const SurveyTutorialGuide = ({ isOpen, onClose }) => {
               <br />
               사용자가 제출한 이미지–캡션 데이터셋을 입력하면
               <br />
-              Score A(풍부함)과 Score C(사실성) 평가가 <strong>동시에 진행</strong>되어
+              Score A(풍부함)과 Score B(사실성) 평가가 <strong>동시에 진행</strong>되어
               <br />
               각각의 점수가 자동으로 산출된다.
             </Paragraph>

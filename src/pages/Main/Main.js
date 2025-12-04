@@ -264,7 +264,7 @@ const Main = () => {
               <CardIcon>📋</CardIcon>
               <CardTitle>AI 평가 과정</CardTitle>
               <CardDescription>
-                AI 모델의 평가 방식(Score A & Score C 기반)에 대해 알아보세요
+                AI 모델의 평가 방식(Score A & Score B 기반)에 대해 알아보세요
               </CardDescription>
               <CardButton
                 type="survey"
