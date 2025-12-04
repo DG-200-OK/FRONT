@@ -185,7 +185,7 @@ const ChartsRow = styled.div`
 
 const TableSection = styled.div`
   width: 100%;
-  max-width: 1133px;
+  max-width: 1180px;
   margin: 0 auto;
   background: #fff;
   padding: 20px 24px;
