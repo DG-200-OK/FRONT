@@ -47,7 +47,7 @@ class AppRoutes extends React.Component {
   };
 
   componentDidMount() {
-    fetch("http://43.200.70.251:8000/api/crawl/data")
+    fetch("https://api.culturelens.click/api/crawl/data")
       .then((res) => res.json())
       .then((json) => {
         const arr = json.responseData ?? [];
