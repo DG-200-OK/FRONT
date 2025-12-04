@@ -142,7 +142,7 @@ const Crawler = () => {
     try {
       console.log("🚀 /api/crawl 시작");
 
-      const crawlRes = await fetch("http://api.culturelens.click/api/crawl", {
+      const crawlRes = await fetch("https://api.culturelens.click/api/crawl", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ query: keyword }),
@@ -153,7 +153,7 @@ const Crawler = () => {
       console.log("🚀 /api/crawl/evaluate 시작");
 
       const evalRes = await fetch(
-        "http://api.culturelens.click/api/crawl/evaluate",
+        "https://api.culturelens.click/api/crawl/evaluate",
         { method: "POST" }
       );
 
@@ -163,7 +163,7 @@ const Crawler = () => {
       console.log("🚀 /api/crawl/data 가져오는 중…");
 
       const dataRes = await fetch(
-        "http://api.culturelens.click/api/crawl/data",
+        "https://api.culturelens.click/api/crawl/data",
         { method: "GET" }
       );
 

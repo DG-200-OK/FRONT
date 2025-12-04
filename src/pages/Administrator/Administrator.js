@@ -25,8 +25,8 @@ const Administrator = () => {
   const [tableData, setTableData] = useState([]);
 
   useEffect(() => {
-    // fetch("http://43.200.70.251:8000/api/crawl/data")
-    fetch("http://api.culturelens.click/api/crawl/data")
+    // fetch("https://43.200.70.251:8000/api/crawl/data")
+    fetch("https://api.culturelens.click/api/crawl/data")
       .then((res) => res.json())
       .then((json) => {
         console.log("📌 서버 원본 데이터:", json);

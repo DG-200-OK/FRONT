@@ -9,8 +9,8 @@ const ChartPreview = ({ kor_title, title, category }) => {
   useEffect(() => {
     // ⭐ cuisine만 실제 그래프 데이터 가져오기
     if (category === "cuisine") {
-      // fetch("http://43.200.70.251:8000/api/crawl/score")
-      fetch("http://api.culturelens.click/api/crawl/score")
+      // fetch("https://43.200.70.251:8000/api/crawl/score")
+      fetch("https://api.culturelens.click/api/crawl/score")
         .then((res) => res.json())
         .then((json) => {
           const arr = json.responseData;
