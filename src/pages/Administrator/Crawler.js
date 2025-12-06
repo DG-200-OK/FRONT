@@ -142,7 +142,7 @@ const Crawler = () => {
     try {
       console.log("🚀 /api/crawl 시작");
 
-      const crawlRes = await fetch("https://api.culturelens.click/api/crawl", {
+      const crawlRes = await fetch("https://api.culturelens.click/api/crawl/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ query: keyword }),
